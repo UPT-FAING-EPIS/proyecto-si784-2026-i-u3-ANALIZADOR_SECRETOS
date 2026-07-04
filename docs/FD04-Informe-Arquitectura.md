@@ -144,34 +144,49 @@ usecaseDiagram
 
 ## 8. Vista Lógica
 
-La Vista Lógica detalla la descomposición del sistema a nivel de diseño estructurado de clases y las interacciones entre los objetos del dominio.
+La **Vista Lógica** describe la organización estructural del sistema, mostrando los principales subsistemas (paquetes) y las dependencias entre ellos. Cada capa agrupa componentes con responsabilidades específicas, favoreciendo la separación de responsabilidades y la mantenibilidad del software.
 
 ### Diagrama de Subsistemas (Paquetes)
 
 ```mermaid
 graph TD
-    subgraph Presentacion ["Capa de Presentación (CLI)"]
-        main["main.py (CLI Entrypoint)"]
+
+    subgraph Presentacion["Capa de Presentación (CLI)"]
+        main["main.py<br/>(Punto de entrada)"]
     end
 
-    subgraph Core ["Capa de Lógica de Negocio (Scanner)"]
-        file_scanner["file_scanner.py (Escáner Core)"]
-        patterns["patterns.py (Catálogo de Patrones)"]
+    subgraph Core["Capa de Lógica de Negocio"]
+        scanner["file_scanner.py<br/>(Motor de escaneo)"]
+        patterns["patterns.py<br/>(Catálogo de patrones)"]
     end
 
-    subgraph Persistencia ["Capa de Reportes"]
-        reporter["reporter.py (Exportación de Archivos)"]
+    subgraph Persistencia["Capa de Reportes"]
+        reporter["reporter.py<br/>(Generación y exportación de reportes)"]
     end
 
-    subgraph Agente ["Capa MCP"]
-        mcp_server["mcp_server.py (FastMCP Server)"]
+    subgraph Agente["Capa MCP"]
+        mcp["mcp_server.py<br/>(Servidor FastMCP)"]
     end
 
-    main --> file_scanner
+    %% Dependencias
+    main --> scanner
     main --> reporter
-    mcp_server --> file_scanner
-    file_scanner --> patterns
+
+    scanner --> patterns
+
+    mcp --> scanner
+    mcp --> reporter
 ```
+
+### Descripción de los subsistemas
+
+- **Capa de Presentación (CLI):** Contiene el punto de entrada de la aplicación (`main.py`), encargado de recibir los parámetros del usuario e iniciar el proceso de análisis.
+
+- **Capa de Lógica de Negocio:** Implementa el funcionamiento principal del sistema. El módulo `file_scanner.py` realiza el análisis de archivos fuente utilizando los patrones definidos en `patterns.py`.
+
+- **Capa de Reportes:** Responsable de generar y exportar los resultados del análisis en diferentes formatos, como JSON, CSV o Markdown.
+
+- **Capa MCP:** Expone las funcionalidades del sistema mediante un servidor FastMCP, permitiendo que clientes compatibles invoquen el escáner y obtengan reportes de forma programática.
 
 ### Diagrama de Secuencia (Vista de Diseño)
 
@@ -236,16 +251,33 @@ graph TD
 
 ### Diagrama de Objetos
 
-Este diagrama de objetos representa una foto instantánea del estado de la memoria cuando se detecta un token de GitHub en el archivo `config.py`:
+El siguiente diagrama de objetos representa una instantánea del estado del sistema durante la ejecución, mostrando un hallazgo (`Finding`) generado al detectar un token de GitHub en el archivo `config.py`. Asimismo, se ilustra la relación entre el hallazgo y el patrón (`Pattern`) utilizado para identificar la credencial.
 
 ```mermaid
-graph LN
-    obj1["<u>f1: Finding</u><br>type = 'GitHub Token'<br>severity = 'HIGH'<br>file = 'src/config.py'<br>line = 12<br>content = 'ghp_abc123***xyz'"]
-    
-    obj2["<u>p1: Pattern</u><br>name = 'GitHub Token'<br>severity = 'HIGH'<br>pattern = re.compile(r'(ghp_)...')"]
+graph LR
 
-    obj1 -- "generado por" --> obj2
+    finding["<u>f1 : Finding</u><br/>
+    type = GitHub Token<br/>
+    severity = HIGH<br/>
+    file = src/config.py<br/>
+    line = 12<br/>
+    content = ghp_abc123***xyz"]
+
+    pattern["<u>p1 : Pattern</u><br/>
+    name = GitHub Token<br/>
+    severity = HIGH<br/>
+    regex = ghp_[A-Za-z0-9]{36}"]
+
+    finding -->|instancia detectada mediante| pattern
 ```
+
+**Descripción de los objetos**
+
+- **`f1 : Finding`** representa una instancia concreta de un hallazgo generado durante el proceso de escaneo. Contiene información como el tipo de secreto detectado, el nivel de severidad, la ubicación del archivo y la línea donde fue encontrado.
+
+- **`p1 : Pattern`** representa el patrón de búsqueda utilizado por el motor de escaneo para identificar tokens de GitHub mediante una expresión regular.
+
+- La relación **"instancia detectada mediante"** indica que el objeto `Finding` fue generado al coincidir el contenido del archivo con el patrón definido en `Pattern`.
 
 ### Diagrama de Clases
 
@@ -379,21 +411,32 @@ graph TD
 
 ### Diagrama de Arquitectura del Sistema (Diagrama de Componentes)
 
-Muestra los componentes lógicos independientes que interactúan en tiempo de ejecución:
+El siguiente diagrama muestra los principales componentes lógicos del sistema y las dependencias entre ellos durante la ejecución.
 
 ```mermaid
 graph LR
-    [Interfaz CLI] --> [Controlador del Scanner]
-    [Servidor MCP] --> [Controlador del Scanner]
-    [Controlador del Scanner] --> [Extractor de Archivos]
-    [Controlador del Scanner] --> [Filtro de Exclusiones]
-    [Controlador del Scanner] --> [Motor Regex]
-    [Motor Regex] --> [Base de Patrones]
-    [Controlador del Scanner] --> [Enmascarador de Datos]
-    [Controlador del Scanner] --> [Escritor de Reportes]
-```
 
----
+    CLI["Interfaz CLI"]
+    MCP["Servidor MCP"]
+    Controller["Controlador del Scanner"]
+    Extractor["Extractor de Archivos"]
+    Filter["Filtro de Exclusiones"]
+    Regex["Motor de Expresiones Regulares"]
+    Patterns["Base de Patrones"]
+    Masker["Enmascarador de Datos"]
+    Reporter["Generador de Reportes"]
+
+    CLI --> Controller
+    MCP --> Controller
+
+    Controller --> Extractor
+    Controller --> Filter
+    Controller --> Regex
+    Controller --> Masker
+    Controller --> Reporter
+
+    Regex --> Patterns
+```
 
 ## 10. Vista de Procesos
 
