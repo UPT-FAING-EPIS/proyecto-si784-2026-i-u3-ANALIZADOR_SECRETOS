@@ -94,32 +94,35 @@ La Vista de Caso de Uso representa el comportamiento externo del sistema desde e
 ```mermaid
 flowchart LR
 
-    actor1["Desarrollador"]
-    actor2["Administrador de Seguridad"]
-    actor3["Pipeline CI/CD"]
-    actor4["Agente de IA"]
+    %% Actores
+    Dev["👨‍💻 Desarrollador"]
+    Sec["🛡️ Administrador de Seguridad"]
+    CI["⚙️ Pipeline CI/CD"]
+    AI["🤖 Agente de IA"]
 
-    subgraph SecretScanner
+    %% Límite del sistema
+    subgraph Sistema["SecretScanner"]
         direction TB
 
-        uc1(["Escanear Path Local"])
-        uc2(["Exportar Reportes"])
-        uc3(["Bloquear Integración Insegura"])
-        uc4(["Analizar mediante MCP"])
+        UC1(["UC-01<br/>Escanear Path Local"])
+        UC2(["UC-02<br/>Exportar Reportes"])
+        UC3(["UC-03<br/>Bloquear Integración Insegura"])
+        UC4(["UC-04<br/>Analizar mediante MCP"])
     end
 
-    actor1 --> uc1
-    actor1 --> uc2
+    %% Relaciones
+    Dev --> UC1
+    Dev --> UC2
 
-    actor2 --> uc1
-    actor2 --> uc2
+    Sec --> UC1
+    Sec --> UC2
 
-    actor3 --> uc1
-    actor3 --> uc3
+    CI --> UC1
+    CI --> UC3
 
-    actor4 --> uc4
+    AI --> UC4
 
-    uc4 -. «include» .-> uc1
+    UC4 -. «include» .-> UC1
 ```
 
 ### Descripción de Casos de Uso Principales
