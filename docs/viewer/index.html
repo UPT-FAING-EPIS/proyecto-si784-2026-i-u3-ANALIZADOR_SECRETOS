@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecretScanner — Visor de Documentos de Calidad</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Prism.js CSS (Theme Tomorrow Night) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Marked.js for MD Parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Mermaid.js for Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <!-- Prism.js for Syntax Highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm0 13.9c-2.7-.8-4.8-3.4-5.4-6.4.7-.6 1.7-1 2.9-1h5c1.2 0 2.2.4 2.9 1-.6 3-2.7 5.6-5.4 6.4z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>SecretScanner</h1>
+          <p>Portal de Aseguramiento de Calidad</p>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-title">ENTREGABLES DEL PROYECTO</div>
+        <ul class="nav-list">
+          <li class="nav-item active" data-file="docs/FD01-Informe-Factibilidad.md">
+            <span class="badge bd-fact">FD01</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">Informe de Factibilidad</span>
+              <span class="nav-item-desc">Viabilidad técnica y financiera</span>
+            </div>
+          </li>
+          <li class="nav-item" data-file="docs/FD02-Informe-Vision.md">
+            <span class="badge bd-vision">FD02</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">Documento de Visión</span>
+              <span class="nav-item-desc">Alcance del producto e interesados</span>
+            </div>
+          </li>
+          <li class="nav-item" data-file="docs/FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md">
+            <span class="badge bd-srs">FD03</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">Requerimientos (SRS)</span>
+              <span class="nav-item-desc">Especificación detallada de diseño</span>
+            </div>
+          </li>
+          <li class="nav-item" data-file="docs/FD04-Informe-Arquitectura.md">
+            <span class="badge bd-sad">FD04</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">Arquitectura (SAD)</span>
+              <span class="nav-item-desc">Modelo 4+1 vistas y escenarios</span>
+            </div>
+          </li>
+          <li class="nav-item" data-file="docs/FD05-Informe-Proyecto-Final.md">
+            <span class="badge bd-final">FD05</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">Informe Final</span>
+              <span class="nav-item-desc">Desarrollo y conclusiones</span>
+            </div>
+          </li>
+          <li class="nav-item" data-file="docs/FD06-Propuesta-Proyecto.md">
+            <span class="badge bd-prop">FD06</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">Propuesta de Proyecto</span>
+              <span class="nav-item-desc">Presupuesto e hitos narrativos</span>
+            </div>
+          </li>
+        </ul>
+
+        <div class="nav-section-title">DOCUMENTACIÓN EXTRA</div>
+        <ul class="nav-list">
+          <li class="nav-item" data-file="README.md">
+            <span class="badge bd-readme">MD</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">README</span>
+              <span class="nav-item-desc">Guía rápida e instalación</span>
+            </div>
+          </li>
+          <li class="nav-item" data-file="MCP_SKILL_INTEGRATION.md">
+            <span class="badge bd-readme">MD</span>
+            <div class="nav-item-text">
+              <span class="nav-item-title">MCP Skill Integration</span>
+              <span class="nav-item-desc">Integración de agentes de IA</span>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <footer class="sidebar-footer">
+        <p>EPIS - Universidad Privada de Tacna</p>
+        <p class="copyright">© 2026 Kiara Z. & Mauricio C.</p>
+      </footer>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-wrapper">
+      <header class="content-header">
+        <div class="header-info">
+          <span id="active-doc-badge" class="badge">FD01</span>
+          <h2 id="active-doc-title">Cargando documento...</h2>
+        </div>
+        <div class="header-actions">
+          <button id="theme-toggle" class="btn" title="Alternar tema claro/oscuro">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="content-container">
+        <!-- Markdown Render Output -->
+        <article id="markdown-body" class="markdown-body">
+          <div class="loader">
+            <div class="spinner"></div>
+            <p>Procesando y compilando diagramas de arquitectura...</p>
+          </div>
+        </article>
+
+        <!-- Right Side: Outline / Table of Contents -->
+        <nav class="outline-sidebar">
+          <div class="outline-title">CONTENIDO DEL DOCUMENTO</div>
+          <ul id="outline-list" class="outline-list">
+            <!-- Populated dynamically by JS -->
+          </ul>
+        </nav>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    // Configure Mermaid
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      securityLevel: 'loose',
+      themeVariables: {
+        background: '#151824',
+        primaryColor: '#202538',
+        primaryTextColor: '#cdd6f4',
+        lineColor: '#585b70',
+        textColor: '#cdd6f4',
+        fontSize: '13px'
+      }
+    });
+
+    // Custom Marked parser for code blocks (specifically handles Mermaid syntax)
+    const renderer = new marked.Renderer();
+    renderer.code = function(code, lang) {
+      if (lang === 'mermaid') {
+        return `<div class="mermaid-diagram"><div class="mermaid">${code}</div></div>`;
+      }
+      return `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`;
+    };
+    marked.setOptions({ renderer: renderer });
+
+    // Document variables
+    const navItems = document.querySelectorAll('.nav-item');
+    const markdownBody = document.getElementById('markdown-body');
+    const activeDocTitle = document.getElementById('active-doc-title');
+    const activeDocBadge = document.getElementById('active-doc-badge');
+    const outlineList = document.getElementById('outline-list');
+    const progressBar = document.getElementById('progress-bar');
+    let headings = [];
+
+    // Map file paths to readable abbreviations
+    const fileBadges = {
+      'docs/FD01-Informe-Factibilidad.md': 'FD01',
+      'docs/FD02-Informe-Vision.md': 'FD02',
+      'docs/FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md': 'FD03',
+      'docs/FD04-Informe-Arquitectura.md': 'FD04',
+      'docs/FD05-Informe-Proyecto-Final.md': 'FD05',
+      'docs/FD06-Propuesta-Proyecto.md': 'FD06',
+      'README.md': 'README',
+      'MCP_SKILL_INTEGRATION.md': 'MCP'
+    };
+
+    // Load a markdown file
+    async function loadDocument(filePath) {
+      markdownBody.innerHTML = `
+        <div class="loader">
+          <div class="spinner"></div>
+          <p>Compilando Markdown y renderizando gráficos Mermaid...</p>
+        </div>
+      `;
+      outlineList.innerHTML = '';
+      
+      try {
+        // Fetch file via HTTP
+        const response = await fetch('/' + filePath);
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        let text = await response.text();
+
+        // Standardize file:/// links in markdown to relative HTML link navigation triggers
+        // Example: [FD01](file:///...) -> [FD01](javascript:void(0)" onclick="navigateTo('docs/FD01...')")
+        text = text.replace(/\[([^\]]+)\]\(file:\/\/\/c:\/Users\/HP\/Desktop\/asjee\/proyecto-si784-2026-i-u3-ANALIZADOR-SECRETOS\/([^\)]+)\)/g, (match, title, relPath) => {
+          // Normalize backslashes or percent encodings
+          let cleanPath = decodeURIComponent(relPath).replace(/\\/g, '/');
+          // For ESPECIFICACION-DISEÑO-SISTEMA
+          cleanPath = cleanPath.replace('docs/FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md', 'docs/FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md');
+          return `<a href="#" onclick="event.preventDefault(); loadDocumentByPath('${cleanPath}')">${title}</a>`;
+        });
+
+        // Convert MD to HTML
+        const html = marked.parse(text);
+        markdownBody.innerHTML = html;
+
+        // Code highlighting using Prism
+        Prism.highlightAllUnder(markdownBody);
+
+        // Render Mermaid Diagrams
+        const mermaidElements = markdownBody.querySelectorAll('.mermaid');
+        if (mermaidElements.length > 0) {
+          try {
+            await mermaid.run({
+              nodes: mermaidElements
+            });
+          } catch (mErr) {
+            console.error("Error al compilar diagramas con Mermaid.js:", mErr);
+          }
+        }
+
+        // Build Table of Contents
+        buildTOC();
+
+        // Update headers info
+        const displayBadge = fileBadges[filePath] || 'DOC';
+        activeDocBadge.textContent = displayBadge;
+        activeDocBadge.className = `badge bd-${displayBadge.toLowerCase()}`;
+        
+        const mainHeading = markdownBody.querySelector('h1');
+        activeDocTitle.textContent = mainHeading ? mainHeading.textContent : filePath.split('/').pop();
+
+      } catch (err) {
+        markdownBody.innerHTML = `
+          <div class="error-container">
+            <h3>Error al cargar el documento</h3>
+            <p>No se pudo recuperar el archivo en <strong>/${filePath}</strong>.</p>
+            <p class="error-detail">${err.message}</p>
+            <p class="suggestion">Asegúrate de que estás ejecutando el script <code>serve_docs.py</code> y de acceder desde tu navegador en <code>http://localhost:8000/docs/viewer/index.html</code>.</p>
+          </div>
+        `;
+        activeDocTitle.textContent = "Error de Carga";
+        activeDocBadge.textContent = "ERR";
+        activeDocBadge.className = "badge error";
+      }
+    }
+
+    // Load document triggered by internal link click
+    window.loadDocumentByPath = function(path) {
+      // Find matching nav item
+      let found = false;
+      navItems.forEach(item => {
+        if (item.getAttribute('data-file') === path) {
+          selectNavItem(item);
+          found = true;
+        }
+      });
+      if (!found) {
+        // Just load it directly
+        loadDocument(path);
+      }
+    };
+
+    // Helper to select sidebar navigation item
+    function selectNavItem(element) {
+      navItems.forEach(item => item.classList.remove('active'));
+      element.classList.add('active');
+      const file = element.getAttribute('data-file');
+      loadDocument(file);
+    }
+
+    // Build Table of Contents (TOC) based on H2 and H3 tags
+    function buildTOC() {
+      const headingElements = markdownBody.querySelectorAll('h2, h3');
+      headings = Array.from(headingElements).map((el, index) => {
+        const id = `heading-${index}`;
+        el.setAttribute('id', id);
+        return {
+          id: id,
+          text: el.textContent,
+          level: el.tagName.toLowerCase(),
+          element: el
+        };
+      });
+
+      if (headings.length === 0) {
+        outlineList.innerHTML = '<li class="outline-item empty">Sin secciones secundarias</li>';
+        return;
+      }
+
+      headings.forEach(h => {
+        const li = document.createElement('li');
+        li.className = `outline-item ${h.level === 'h3' ? 'h3-indent' : ''}`;
+        
+        const a = document.createElement('a');
+        a.href = `#${h.id}`;
+        a.textContent = h.text;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          h.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        li.appendChild(a);
+        outlineList.appendChild(li);
+      });
+    }
+
+    // Add scroll listener for outline active indicators and progress bar
+    window.addEventListener('scroll', () => {
+      // 1. Reading progress bar
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = `${progress}%`;
+
+      // 2. Active heading highlighting in TOC
+      let activeId = null;
+      const triggerOffset = 100; // px from top
+      
+      for (let i = 0; i < headings.length; i++) {
+        const h = headings[i];
+        const rect = h.element.getBoundingClientRect();
+        if (rect.top <= triggerOffset) {
+          activeId = h.id;
+        } else {
+          break; // Stop looking as subsequent headers are further down
+        }
+      }
+
+      const outlineLinks = outlineList.querySelectorAll('a');
+      outlineLinks.forEach(link => {
+        if (link.getAttribute('href') === `#${activeId}`) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+
+    // Dark / Light Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+      
+      // Re-initialize mermaid with appropriate theme
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isLight ? 'default' : 'dark',
+        themeVariables: {
+          background: isLight ? '#f4f5f6' : '#151824'
+        }
+      });
+      
+      // Refresh current doc
+      const activeItem = document.querySelector('.nav-item.active');
+      if (activeItem) {
+        loadDocument(activeItem.getAttribute('data-file'));
+      }
+    });
+
+    // Sidebar navigation click handlers
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        selectNavItem(item);
+      });
+    });
+
+    // Load initial document
+    document.addEventListener('DOMContentLoaded', () => {
+      const activeItem = document.querySelector('.nav-item.active');
+      if (activeItem) {
+        loadDocument(activeItem.getAttribute('data-file'));
+      }
+    });
+  </script>
+
+</body>
+</html>
