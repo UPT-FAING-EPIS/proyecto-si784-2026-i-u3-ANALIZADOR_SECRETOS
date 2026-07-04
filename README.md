@@ -23,10 +23,15 @@ Herramienta de código abierto desarrollada en **Python 3.10** que analiza proye
 
 ## Instalación
 
+Instala la herramienta fácilmente desde PyPI usando `pip`:
+
 ```bash
-git clone https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-i-u1-analizador-de-secretos.git
-cd proyecto-si784-2026-i-u1-analizador-de-secretos
-pip install -r requirements.txt
+pip install secret-scanner-cl
+```
+
+*(Opcional) Si usas `pipx` para gestionar herramientas de consola en entornos aislados:*
+```bash
+pipx install secret-scanner-cl
 ```
 
 ## Uso de la CLI
