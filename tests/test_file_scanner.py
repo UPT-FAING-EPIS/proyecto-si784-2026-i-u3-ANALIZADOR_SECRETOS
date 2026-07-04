@@ -8,7 +8,7 @@ import os
 import pytest
 from pathlib import Path
 
-from scanner.file_scanner import scan_path, _mask_secret, _is_text_file
+from secret_scanner.scanner.file_scanner import scan_path, _mask_secret, _is_text_file
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────

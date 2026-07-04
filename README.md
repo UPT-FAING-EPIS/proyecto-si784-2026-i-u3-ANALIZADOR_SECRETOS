@@ -23,10 +23,15 @@ Herramienta de código abierto desarrollada en **Python 3.10** que analiza proye
 
 ## Instalación
 
+Instala la herramienta fácilmente desde PyPI usando `pip`:
+
 ```bash
-git clone https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-i-u1-analizador-de-secretos.git
-cd proyecto-si784-2026-i-u1-analizador-de-secretos
-pip install -r requirements.txt
+pip install secret-scanner-cl
+```
+
+*(Opcional) Si usas `pipx` para gestionar herramientas de consola en entornos aislados:*
+```bash
+pipx install secret-scanner-cl
 ```
 
 ## Uso de la CLI
@@ -61,8 +66,31 @@ python main.py --path ./mi_proyecto --output csv
 # Modo verbose — muestra cada archivo procesado
 python main.py --path ./mi_proyecto --verbose
 
-# Verbose + exportar JSON
+# Modo Verbose + Exportar JSON
 python main.py --path ./mi_proyecto --verbose --output json
+```
+
+## Integración con Agentes de IA (MCP Skill)
+
+SecretScanner incluye un servidor compatible con el **Model Context Protocol (MCP)**, lo que permite que herramientas de Inteligencia Artificial (como Claude Desktop o Cursor) utilicen este analizador de manera nativa como una "Skill".
+
+Para iniciar el servidor MCP, puedes utilizar el comando global que se instala automáticamente con el paquete:
+```bash
+secret-scanner-mcp
+```
+*Nota: Este comando se comunica usando la entrada y salida estándar (`stdio`), diseñado específicamente para ser consumido por un Agente IA, no por humanos.*
+
+### Cómo configurarlo en Claude Desktop / Agentes compatibles
+Añade la siguiente configuración al archivo de configuración de tu Agente (ej. `claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "secret-scanner": {
+      "command": "secret-scanner-mcp",
+      "args": []
+    }
+  }
+}
 ```
 
 ## Ejemplo de salida

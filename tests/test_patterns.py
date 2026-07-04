@@ -7,7 +7,7 @@ Each pattern is tested with:
 """
 
 import pytest
-from scanner.patterns import PATTERNS
+from secret_scanner.scanner.patterns import PATTERNS
 
 # Build a convenience dict: name → compiled pattern
 _PAT = {p["name"]: p["pattern"] for p in PATTERNS}

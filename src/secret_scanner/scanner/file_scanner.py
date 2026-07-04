@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from typing import List, Dict, Any
 
-from scanner.patterns import PATTERNS
+from secret_scanner.scanner.patterns import PATTERNS
 
 # ── Constants ──────────────────────────────────────────────────────────────
 BINARY_EXTENSIONS: set[str] = {
