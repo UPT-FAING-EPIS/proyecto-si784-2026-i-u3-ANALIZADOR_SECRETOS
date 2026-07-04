@@ -92,27 +92,34 @@ La Vista de Caso de Uso representa el comportamiento externo del sistema desde e
 ### Diagrama de Casos de Uso
 
 ```mermaid
-usecaseDiagram
-    actor "Desarrollador" as Dev
-    actor "Administrador de Seguridad" as Sec
-    actor "Pipeline CI/CD" as CI
-    actor "Agente de IA" as AIA
+flowchart LR
 
-    rectangle SecretScanner {
-        usecase "UC-01: Escanear Path Local" as UC1
-        usecase "UC-02: Exportar Reportes" as UC2
-        usecase "UC-03: Bloquear Integración Insegura" as UC3
-        usecase "UC-04: Analizar mediante MCP" as UC4
-    }
+    actor1["Desarrollador"]
+    actor2["Administrador de Seguridad"]
+    actor3["Pipeline CI/CD"]
+    actor4["Agente de IA"]
 
-    Dev --> UC1
-    Dev --> UC2
-    Sec --> UC1
-    Sec --> UC2
-    CI --> UC1
-    CI --> UC3
-    AIA --> UC4
-    UC4 ..> UC1 : include
+    subgraph SecretScanner
+        direction TB
+
+        uc1(["Escanear Path Local"])
+        uc2(["Exportar Reportes"])
+        uc3(["Bloquear Integración Insegura"])
+        uc4(["Analizar mediante MCP"])
+    end
+
+    actor1 --> uc1
+    actor1 --> uc2
+
+    actor2 --> uc1
+    actor2 --> uc2
+
+    actor3 --> uc1
+    actor3 --> uc3
+
+    actor4 --> uc4
+
+    uc4 -. «include» .-> uc1
 ```
 
 ### Descripción de Casos de Uso Principales
@@ -256,19 +263,27 @@ El siguiente diagrama de objetos representa una instantánea del estado del sist
 ```mermaid
 graph LR
 
-    finding["<u>f1 : Finding</u><br/>
-    type = GitHub Token<br/>
-    severity = HIGH<br/>
-    file = src/config.py<br/>
-    line = 12<br/>
-    content = ghp_abc123***xyz"]
+    subgraph Runtime["Instancias en tiempo de ejecución"]
 
-    pattern["<u>p1 : Pattern</u><br/>
-    name = GitHub Token<br/>
-    severity = HIGH<br/>
-    regex = ghp_[A-Za-z0-9]{36}"]
+        Finding["<b>f1 : Finding</b><br/><br/>
+        Tipo: GitHub Token<br/>
+        Severidad: HIGH<br/>
+        Archivo: src/config.py<br/>
+        Línea: 12<br/>
+        Valor: ghp_abc123***xyz"]
 
-    finding -->|instancia detectada mediante| pattern
+    end
+
+    subgraph Catalogo["Catálogo de Patrones"]
+
+        Pattern["<b>p1 : Pattern</b><br/><br/>
+        Nombre: GitHub Token<br/>
+        Severidad: HIGH<br/>
+        Expresión Regular"]
+
+    end
+
+    Finding -->|coincide con| Pattern
 ```
 
 **Descripción de los objetos**
