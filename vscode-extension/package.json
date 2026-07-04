@@ -1,8 +1,8 @@
 {
   "name": "secret-scanner-cl",
-  "displayName": "Secret Scanner Kiara",
+  "displayName": "SecretScan",
   "description": "Visual Studio Code extension to highlight hardcoded secrets, passwords and API keys in your code using SecretScanner.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "kiara",
   "engines": {
     "vscode": "^1.85.0"
