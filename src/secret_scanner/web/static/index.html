@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecretScanner — Auditoría Multipropósito & Seguridad</title>
+  <meta name="description" content="Sistema web multipropósito para la detección de credenciales expuestas, auditoría de robustez de secretos, simulador regex y educación en remediación de código seguro.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Estilos CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- App Wrapper -->
+  <div class="app-layout">
+    
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="28" height="28">
+            <path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm0 13.9c-2.7-.8-4.8-3.4-5.4-6.4.7-.6 1.7-1 2.9-1h5c1.2 0 2.2.4 2.9 1-.6 3-2.7 5.6-5.4 6.4z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>SecretScanner</h1>
+          <span class="sub-brand">Multipurpose Security Suite</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">ANALIZADORES</div>
+        <ul class="nav-list">
+          <li class="nav-item active" data-target="panel-dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard Principal</span>
+          </li>
+          <li class="nav-item" data-target="panel-path-scanner">
+            <span class="nav-icon">📁</span>
+            <span>Escáner de Directorios</span>
+          </li>
+          <li class="nav-item" data-target="panel-code-scanner">
+            <span class="nav-icon">💻</span>
+            <span>Escáner de Código (Paste)</span>
+          </li>
+        </ul>
+
+        <div class="nav-section-title">HERRAMIENTAS & REMEDIACIÓN</div>
+        <ul class="nav-list">
+          <li class="nav-item" data-target="panel-entropy">
+            <span class="nav-icon">🔑</span>
+            <span>Analizador de Entropía</span>
+          </li>
+          <li class="nav-item" data-target="panel-generator">
+            <span class="nav-icon">⚡</span>
+            <span>Generador de Secretos</span>
+          </li>
+          <li class="nav-item" data-target="panel-regex-lab">
+            <span class="nav-icon">🧪</span>
+            <span>Laboratorio Regex</span>
+          </li>
+          <li class="nav-item" data-target="panel-sandbox">
+            <span class="nav-icon">🛡️</span>
+            <span>Guía de Remediación</span>
+          </li>
+        </ul>
+      </nav>
+
+      <footer class="sidebar-footer">
+        <p>Aseguramiento de la Calidad de Software</p>
+        <p class="footer-meta">EPIS - Universidad Privada de Tacna</p>
+        <p class="copyright">© 2026 SecretScanner</p>
+      </footer>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="app-main">
+      <header class="main-header">
+        <div class="view-title-container">
+          <h2 id="current-view-title">Dashboard Principal</h2>
+          <p id="current-view-desc" class="view-subtitle">Resumen general e indicadores clave de seguridad.</p>
+        </div>
+        <div class="header-actions">
+          <span class="status-indicator online"></span>
+          <span class="status-text">Backend Activo</span>
+        </div>
+      </header>
+
+      <div class="main-content">
+        
+        <!-- ================= PANEL 1: DASHBOARD ================= -->
+        <section id="panel-dashboard" class="content-panel active">
+          <div class="dashboard-banner">
+            <div class="banner-text">
+              <h3>Protege tus proyectos contra fugas de credenciales</h3>
+              <p>SecretScanner analiza código fuente buscando credenciales e información confidencial hardcodeada mediante patrones regex de alto rendimiento.</p>
+            </div>
+            <div class="banner-badge">v1.0.0</div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card card-purple">
+              <div class="metric-info">
+                <span class="metric-label">Escaneos Realizados</span>
+                <span id="stat-scans" class="metric-value">0</span>
+              </div>
+              <span class="metric-icon">🔍</span>
+            </div>
+            <div class="metric-card card-red">
+              <div class="metric-info">
+                <span class="metric-label">Total Secretos Encontrados</span>
+                <span id="stat-secrets" class="metric-value">0</span>
+              </div>
+              <span class="metric-icon">🚨</span>
+            </div>
+            <div class="metric-card card-yellow">
+              <div class="metric-info">
+                <span class="metric-label">Riesgo Crítico / Alto</span>
+                <span id="stat-high" class="metric-value">0</span>
+              </div>
+              <span class="metric-icon">⚠️</span>
+            </div>
+            <div class="metric-card card-blue">
+              <div class="metric-info">
+                <span class="metric-label">Patrones de Detección</span>
+                <span id="stat-patterns" class="metric-value">8</span>
+              </div>
+              <span class="metric-icon">⚙️</span>
+            </div>
+          </div>
+
+          <div class="layout-two-columns">
+            <div class="glass-card">
+              <h4>¿Por qué usar SecretScanner?</h4>
+              <p class="card-desc">El hardcodeo de claves API, tokens y credenciales es una de las fallas de seguridad más comunes y críticas de la industria.</p>
+              <div class="features-list">
+                <div class="feature-item">
+                  <span class="feature-bullet green">✓</span>
+                  <div>
+                    <strong>Detección Rápida:</strong> Ejecución instantánea analizando patrones clave.
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <span class="feature-bullet green">✓</span>
+                  <div>
+                    <strong>Multidispositivo & Multiuso:</strong> Interfaz CLI, MCP para agentes IA, extensión VSCode y ahora consola web integral.
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <span class="feature-bullet green">✓</span>
+                  <div>
+                    <strong>Generación y Auditoría:</strong> Corrige credenciales generando alternativas de alta entropía y auditando su fortaleza directamente.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <h4>Patrones Activos de Escaneo</h4>
+              <div class="patterns-list" id="active-patterns-summary">
+                <!-- Populated dynamically -->
+                <div class="loader-spinner small"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PANEL 2: PATH SCANNER ================= -->
+        <section id="panel-path-scanner" class="content-panel">
+          <div class="tabs-sub-scanner">
+            <button class="btn-sub-tab active" data-sub-scan="sub-scan-local">📁 Ruta Local</button>
+            <button class="btn-sub-tab" data-sub-scan="sub-scan-github">🌐 Repositorio GitHub</button>
+            <button class="btn-sub-tab" data-sub-scan="sub-scan-upload">📤 Subir ZIP</button>
+          </div>
+
+          <div id="sub-scan-local" class="sub-scan-content active">
+            <div class="glass-card">
+              <h4>Análisis de Ruta Local</h4>
+              <p class="card-desc">Introduce una ruta absoluta o relativa en tu sistema (directorio de proyecto o archivo específico) para auditar.</p>
+              
+              <form id="form-path-scan" class="scan-form" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                  <input type="text" id="scan-path-input" placeholder="Ejemplo: .  ó  C:\proyectos\mi_app">
+                  <button type="submit" id="btn-path-scan" class="btn btn-primary">Iniciar Escaneo</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div id="sub-scan-github" class="sub-scan-content">
+            <div class="glass-card">
+              <h4>Escaneo desde GitHub</h4>
+              <p class="card-desc">Introduce la URL de un repositorio público de GitHub para descargar y analizar en memoria.</p>
+              
+              <form id="form-git-scan" class="scan-form" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                  <input type="text" id="scan-git-input" placeholder="Ejemplo: https://github.com/usuario/repositorio">
+                  <button type="submit" id="btn-git-scan" class="btn btn-primary">Escanear Repositorio</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div id="sub-scan-upload" class="sub-scan-content">
+            <div class="glass-card">
+              <h4>Carga de Archivo (.zip)</h4>
+              <p class="card-desc">Sube o arrastra un archivo comprimido .zip conteniendo tu proyecto para auditarlo.</p>
+              
+              <div id="zip-drag-drop-zone" class="drag-drop-area">
+                <div class="drag-drop-inner">
+                  <span class="drag-drop-icon">📦</span>
+                  <p>Arrastra tu archivo .zip aquí o haz clic para buscar</p>
+                  <span class="drag-drop-meta">Tamaño máximo recomendado: 50MB</span>
+                  <input type="file" id="zip-file-input" accept=".zip" class="hidden-file-input">
+                </div>
+              </div>
+              <div id="zip-file-selected-status" class="file-status-box hidden">
+                <span class="file-icon">📄</span>
+                <span id="zip-filename-label" class="file-name">-</span>
+                <div class="file-status-actions">
+                  <button id="btn-cancel-upload" class="btn btn-outline small">Quitar</button>
+                  <button id="btn-upload-scan" class="btn btn-primary small">Comenzar Análisis</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div id="path-scan-loading" class="scan-loading-container hidden">
+            <div class="loader-spinner"></div>
+            <p>Analizando archivos del proyecto... Esto puede tomar unos segundos.</p>
+          </div>
+
+          <div id="path-scan-results" class="hidden">
+            <div class="results-header-summary">
+              <div class="res-summary-item">
+                <span class="res-label">Archivos Analizados</span>
+                <span id="scan-res-files" class="res-value">0</span>
+              </div>
+              <div class="res-summary-item">
+                <span class="res-label">Secretos Detectados</span>
+                <span id="scan-res-count" class="res-value badge-count warning">0</span>
+              </div>
+              <div class="res-summary-item actions-item">
+                <button onclick="exportResults('json')" class="btn btn-outline small">Exportar JSON</button>
+                <button onclick="exportResults('csv')" class="btn btn-outline small">Exportar CSV</button>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <h4>Hallazgos de Seguridad</h4>
+              <div class="table-container">
+                <table class="results-table">
+                  <thead>
+                    <tr>
+                      <th>Severidad</th>
+                      <th>Tipo de Secreto</th>
+                      <th>Archivo y Línea</th>
+                      <th>Contenido Identificado (Enmascarado)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="path-scan-findings-body">
+                    <!-- Dinámico -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="path-scan-no-findings" class="no-findings-alert hidden">
+                🎉 ¡Excelente! No se detectaron credenciales ni secretos expuestos en esta ruta.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PANEL 3: CODE SCANNER ================= -->
+        <section id="panel-code-scanner" class="content-panel">
+          <div class="glass-card">
+            <h4>Análisis Rápido de Código (Copia y Pega)</h4>
+            <p class="card-desc">Copia un fragmento de código, archivo de configuración, logs o texto y analízalo en tiempo real antes de subirlo a Git.</p>
+            
+            <textarea id="code-paste-input" class="code-editor-textarea" placeholder="Pega tu código aquí...&#10;Ejemplo:&#10;db_password = 'super_secret_password_123'&#10;github_token = 'ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'"></textarea>
+            
+            <div class="form-actions">
+              <button id="btn-clear-code" class="btn btn-outline">Limpiar</button>
+              <button id="btn-code-scan" class="btn btn-primary">Escanear Código</button>
+            </div>
+          </div>
+
+          <div id="code-scan-results" class="hidden">
+            <div class="layout-two-columns">
+              <div class="glass-card">
+                <h4>Resumen del Escaneo</h4>
+                <div class="scan-stats-inline">
+                  <p><strong>Líneas Analizadas:</strong> <span id="code-res-lines">0</span></p>
+                  <p><strong>Hallazgos Detectados:</strong> <span id="code-res-count" class="badge-count">0</span></p>
+                </div>
+                
+                <div class="findings-list-mini" id="code-findings-list">
+                  <!-- Dinámico -->
+                </div>
+              </div>
+
+              <div class="glass-card">
+                <h4>Código Resaltado</h4>
+                <p class="card-desc">Líneas críticas marcadas con advertencias de seguridad:</p>
+                <div class="code-view-marked" id="code-viewer-container">
+                  <!-- Dinámico -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PANEL 4: ENTROPY ANALYZER ================= -->
+        <section id="panel-entropy" class="content-panel">
+          <div class="layout-two-columns">
+            
+            <div class="glass-card">
+              <h4>Evaluador de Robustez de Secretos</h4>
+              <p class="card-desc">Comprueba la fortaleza y resistencia frente a ataques de fuerza bruta de tus tokens y contraseñas mediante la entropía de Shannon.</p>
+              
+              <div class="form-group">
+                <label for="entropy-secret-input">Introduce el Secreto a Evaluar:</label>
+                <div class="input-password-wrapper">
+                  <input type="text" id="entropy-secret-input" placeholder="Introduce una contraseña, token o API key..." autocomplete="off">
+                  <button id="btn-entropy-random" class="btn btn-outline btn-inline-icon" title="Generar uno aleatorio">🎲</button>
+                </div>
+              </div>
+
+              <div class="entropy-card-actions">
+                <button id="btn-entropy-eval" class="btn btn-primary w-100">Analizar Robustez</button>
+              </div>
+
+              <div class="recs-box">
+                <h5>Recomendaciones de Seguridad:</h5>
+                <ul id="entropy-recs-list" class="recs-list">
+                  <li>Introduce una cadena de caracteres arriba para ver sugerencias específicas.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="glass-card center-content">
+              <h4>Métricas de Complejidad</h4>
+              
+              <!-- Circular gauge for strength -->
+              <div class="strength-gauge-container">
+                <svg class="strength-svg" viewBox="0 0 100 100">
+                  <circle class="gauge-bg" cx="50" cy="50" r="40" />
+                  <circle id="gauge-fill" class="gauge-fill strength-weak" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                </svg>
+                <div class="gauge-text-overlay">
+                  <span id="entropy-strength-label" class="strength-title">-</span>
+                  <span id="entropy-value-bits" class="strength-subtitle">0.0 bits</span>
+                </div>
+              </div>
+
+              <div class="entropy-stats-list">
+                <div class="entropy-stat-item">
+                  <span class="ent-label">Entropía Shannon (Información)</span>
+                  <span id="stat-shannon-val" class="ent-val">0.0 bits/caract.</span>
+                </div>
+                <div class="entropy-stat-item">
+                  <span class="ent-label">Tiempo estimado de descifrado</span>
+                  <span id="stat-crack-time" class="ent-val font-highlight">-</span>
+                </div>
+                <p class="ref-note">* Estimación basada en un clúster de tarjetas gráficas realizando 10 mil millones de intentos por segundo.</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ================= PANEL 5: SECRET GENERATOR ================= -->
+        <section id="panel-generator" class="content-panel">
+          <div class="layout-two-columns">
+            <div class="glass-card">
+              <h4>Generación de Secretos Criptográficos</h4>
+              <p class="card-desc">Crea de forma local credenciales altamente resistentes y de nivel industrial para tus servicios, bases de datos o aplicaciones.</p>
+              
+              <div class="form-group">
+                <div class="slider-header">
+                  <label for="gen-length">Longitud de Caracteres:</label>
+                  <span id="gen-length-val" class="badge-value">32</span>
+                </div>
+                <input type="range" id="gen-length" min="8" max="128" value="32" class="slider">
+              </div>
+
+              <div class="checkbox-grid">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="gen-upper" checked>
+                  <span class="checkmark"></span>
+                  Mayúsculas (A-Z)
+                </label>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="gen-lower" checked>
+                  <span class="checkmark"></span>
+                  Minúsculas (a-z)
+                </label>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="gen-digits" checked>
+                  <span class="checkmark"></span>
+                  Números (0-9)
+                </label>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="gen-symbols" checked>
+                  <span class="checkmark"></span>
+                  Especiales (!@#$%)
+                </label>
+              </div>
+
+              <div class="form-actions mt-lg">
+                <button id="btn-generate-action" class="btn btn-primary w-100">Generar Secreto Seguro</button>
+              </div>
+            </div>
+
+            <div class="glass-card flex-column">
+              <h4>Secreto Generado</h4>
+              <p class="card-desc">Este valor se genera localmente mediante un algoritmo criptográficamente seguro y no se envía a ningún servidor.</p>
+              
+              <div class="generated-output-box">
+                <textarea id="generated-secret-output" readonly placeholder="Tu secreto generado aparecerá aquí..."></textarea>
+                <button id="btn-copy-secret" class="btn btn-copy" title="Copiar al portapapeles">
+                  Copiar Secreto
+                </button>
+              </div>
+
+              <div class="quick-audit-box hidden" id="gen-quick-audit">
+                <h5>Auditoría Rápida de Fortaleza:</h5>
+                <p><strong>Entropía total:</strong> <span id="gen-audit-bits">0.0</span> bits</p>
+                <p><strong>Nivel de Seguridad:</strong> <span id="gen-audit-strength" class="text-highlight">-</span></p>
+                <p><strong>Descifrado:</strong> <span id="gen-audit-time">-</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PANEL 6: REGEX LAB ================= -->
+        <section id="panel-regex-lab" class="content-panel">
+          <div class="layout-two-columns">
+            <div class="glass-card">
+              <h4>Prueba de Expresiones Regulares</h4>
+              <p class="card-desc">Crea y valida patrones de escaneo personalizados contra cadenas de prueba para expandir las capacidades del scanner.</p>
+              
+              <div class="form-group">
+                <label for="regex-pattern-input">Expresión Regular (Regex):</label>
+                <input type="text" id="regex-pattern-input" placeholder="Ej: token_[A-Za-z0-9]{16}" required>
+              </div>
+
+              <div class="form-group">
+                <label for="regex-test-input">Texto o Código de Prueba:</label>
+                <textarea id="regex-test-input" placeholder="Escribe el texto de prueba aquí para buscar coincidencias..." class="regex-test-area"></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button id="btn-regex-test" class="btn btn-primary w-100">Ejecutar Prueba de Coincidencias</button>
+              </div>
+            </div>
+
+            <div class="glass-card flex-column">
+              <h4>Resultados de Coincidencia</h4>
+              <p class="card-desc">Matches encontrados por el motor de expresiones regulares:</p>
+              
+              <div id="regex-results-box" class="regex-results-box empty">
+                Ingresa una expresión regular y texto de prueba, luego haz clic en "Ejecutar Prueba".
+              </div>
+
+              <div class="help-box">
+                <h5>Guía rápida regex de secretos:</h5>
+                <ul>
+                  <li><code>[A-Za-z0-9]{32}</code>: Cadena alfanumérica exacta de 32 caracteres.</li>
+                  <li><code>(?i)api_key</code>: Coincidencia sin distinguir mayúsculas de minúsculas.</li>
+                  <li><code>\b[0-9a-f]{40}\b</code>: Claves SHA-1 o hashes de 40 dígitos hexadecimales aislados.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PANEL 7: REMEDIATION SANDBOX ================= -->
+        <section id="panel-sandbox" class="content-panel">
+          <div class="glass-card">
+            <h4>Caja de Arena de Remediación Interactiva</h4>
+            <p class="card-desc">Aprende cómo corregir las vulnerabilidades de secretos hardcodeados migrando tu código hacia mejores prácticas de desarrollo.</p>
+            
+            <div class="tabs-language-selector">
+              <button class="btn-lang active" data-lang="python">Python</button>
+              <button class="btn-lang" data-lang="javascript">Javascript / Node</button>
+              <button class="btn-lang" data-lang="go">Go (Golang)</button>
+              <button class="btn-lang" data-lang="java">Java</button>
+            </div>
+          </div>
+
+          <div class="layout-two-columns mt-md">
+            
+            <!-- Code comparison columns -->
+            <div class="glass-card card-vulnerable">
+              <div class="card-header-badge bad">❌ VULNERABLE (Hardcoded)</div>
+              <p class="card-desc">Exponer claves privadas directamente en el repositorio Git.</p>
+              <pre class="code-display" id="remediation-vulnerable-code">
+                <!-- Dinámico -->
+              </pre>
+            </div>
+
+            <div class="glass-card card-secure">
+              <div class="card-header-badge good">✓ SEGURO (Variables de Entorno)</div>
+              <p class="card-desc">Cargar las credenciales dinámicamente desde el entorno o archivo `.env` configurado en `.gitignore`.</p>
+              <pre class="code-display" id="remediation-secure-code">
+                <!-- Dinámico -->
+              </pre>
+            </div>
+
+          </div>
+
+          <div class="glass-card mt-md">
+            <h4>Paso a paso para asegurar tus secretos</h4>
+            <div class="remediation-steps" id="remediation-steps-description">
+              <!-- Dinámico -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>

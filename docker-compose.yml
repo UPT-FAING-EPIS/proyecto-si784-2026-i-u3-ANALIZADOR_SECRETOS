@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  secret-scanner-web:
+    build: .
+    container_name: secret_scanner_container
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONPATH=/app/src
+    restart: unless-stopped
