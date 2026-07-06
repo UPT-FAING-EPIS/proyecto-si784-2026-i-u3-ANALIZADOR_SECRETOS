@@ -170,39 +170,8 @@ cualquier directorio de proyecto.
 
 **Estructura del monorepo actual:**
 
-```
-secret-scanner/
-├── .github/
-│   └── workflows/
-│       ├── ci.yml            # Integración continua (Pytest & Coverage)
-│       └── plantuml.yml      # Auto-generación y commit de diagramas .png
-├── docs/
-│   ├── media/                # Diagramas PUML (.puml) e imágenes (.png)
-│   ├── FD01-Factibilidad.md
-│   ├── FD02-Vision.md
-│   ├── FD-03-Especificacion.md
-│   ├── FD04-Arquitectura.md
-│   ├── FD05-ProyectoFinal.md
-│   └── FD06-Propuesta.md
-├── src/secret_scanner/
-│   ├── main.py               # CLI principal
-│   ├── mcp_server.py         # Servidor MCP para IA
-│   ├── scanner/
-│   │   ├── __init__.py
-│   │   ├── patterns.py       # Expresiones regulares
-│   │   ├── file_scanner.py   # Motor de análisis local
-│   │   └── reporter.py       # Explotación de reportes
-│   └── web/
-│       ├── app.py            # Servidor FastAPI (Endpoints REST)
-│       └── static/           # Archivos estáticos HTML/CSS/JS (UI)
-├── tests/                    # Pruebas unitarias
-├── output/                   # Reportes generados locales
-├── Dockerfile                # Receta Docker
-├── docker-compose.yml        # Orquestación local de contenedores
-├── render.yaml               # Blueprint de Render (Infraestructura declarativa)
-├── run_web.py                # Lanzador del entorno web local
-└── requirements.txt          # Dependencias
-```
+![Estructura del Monorepo](./media/directorio_monorepo.png)
+
 
 
 ---

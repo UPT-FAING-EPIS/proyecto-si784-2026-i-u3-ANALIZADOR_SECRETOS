@@ -1,0 +1,48 @@
+@startuml proceso_propuesto
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam sequence {
+    ActorBorderColor #6366f1
+    ActorBackgroundColor #111827
+    ActorFontColor #f3f4f6
+    LifeLineBorderColor #6366f1
+    LifeLineBackgroundColor #1f2937
+    ParticipantBorderColor #6366f1
+    ParticipantBackgroundColor #111827
+    ParticipantFontColor #f3f4f6
+    ArrowColor #6366f1
+}
+
+actor Desarrollador as dev
+participant SecretScanner as scanner
+participant "CI/CD Pipeline" as cicd
+participant "Deploy Server (Prod)" as prod
+
+dev -> dev : [1] Escribir código
+dev -> scanner : [2] Ejecutar análisis local / pre-commit
+activate scanner
+scanner -> scanner : [3] Analizar patrones regex
+alt Si hay secretos
+    scanner --> dev : [4] Alerta & Bloquear Commit (Exit Code 1)
+    dev -> dev : [5] Corregir código (remediación preventiva)
+else Si no hay secretos
+    scanner --> dev : [4] Permitir Commit (Exit Code 0)
+    dev -> dev : [6] Git Commit & Push
+end
+deactivate scanner
+
+cicd -> scanner : [7] Iniciar Pipeline automatizado
+activate cicd
+cicd -> scanner : [8] Escanear workspace
+activate scanner
+scanner -> scanner : [9] Auditar patrones
+alt Si hay secretos en commits
+    scanner --> cicd : [10] Falla pipeline (Exit Code 1)
+    cicd --> dev : [11] Notificar falla y bloquear build
+else Si está limpio
+    scanner --> cicd : [10] Pasar build (Exit Code 0)
+    deactivate scanner
+    cicd -> prod : [12] Deploy a producción seguro
+end
+deactivate cicd
+@enduml

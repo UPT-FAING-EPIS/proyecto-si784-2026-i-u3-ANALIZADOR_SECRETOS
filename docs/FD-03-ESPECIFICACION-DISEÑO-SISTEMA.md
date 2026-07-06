@@ -181,33 +181,8 @@ Existe la necesidad imperativa de una herramienta automatizada que:
 
 ### a) Diagrama del Proceso Actual – Diagrama de Actividades
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│              PROCESO ACTUAL (Sin SecretScanner)                 │
-└─────────────────────────────────────────────────────────────────┘
+![Diagrama del Proceso Actual](./media/proceso_actual.png)
 
-       Desarrollador               Sistema de Control              DevOps
-             │                           │                          │
-             │                           │                          │
-    [1] Escribir código ──────────────────►                         │
-             │                           │                          │
-    [2] Commit con secrets     [3] Almacenar en repo               │
-             │                           │                          │
-             │──────────────────────────►│                          │
-             │                           │                          │
-             │                           │  [4] Push a producción   │
-             │                           ├─────────────────────────►│
-             │                           │                          │
-             │                           │        [5] Detectar breach
-             │                           │              │
-             │                           │        [6] Incident Response
-             │                           │              │
-             │                           │        [7] Remediación (costosa)
-             │                           │              │
-             │────────────────────────────────────────►X Daño realizado
-             │
-        PROBLEMA: Secrets expuestos antes de detección
-```
 
 **Limitaciones del Proceso Actual:**
 
@@ -218,42 +193,8 @@ Existe la necesidad imperativa de una herramienta automatizada que:
 
 ### b) Diagrama del Proceso Propuesto – Diagrama de Actividades Inicial
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│   PROCESO PROPUESTO (Con SecretScanner - CI/CD Integrado)       │
-└──────────────────────────────────────────────────────────────────┘
+![Diagrama del Proceso Propuesto](./media/proceso_propuesto.png)
 
-       Desarrollador            SecretScanner               CI/CD        DevOps
-             │                       │                        │          │
-             │                       │                        │          │
-    [1] Escribir código             │                        │          │
-             │                       │                        │          │
-    [2] Commit (potencial)          │                        │          │
-             │                       │                        │          │
-             ├──────────────────────►│                        │          │
-             │                       │                        │          │
-             │    [3] Analizar patrones                      │          │
-             │                       │                        │          │
-             │    [4] Detectar secrets
-             │     (SI)  ◄───────────┤                        │          │
-             │         │             │                        │          │
-    [5] Rechazar         [6] BLOQUEAR COMMIT                 │          │
-    [6] Notificar        │             │                        │          │
-     [7] Corregir     [7] Generar reporte                     │          │
-             │             │                                   │          │
-             │        ┌─────┴────────────────────────────────►│          │
-             │        │    (SI Secretos)  [8] FALLAR BUILD    │          │
-             │        │                    │                   │          │
-             │        │    (NO Secretos) [8] PASAR           │          │
-             │        │                    │                   │          │
-             │        └─────────────────────┼──────────────────►│
-             │                              │                   │
-             │                              │          [9] Deploy a PROD
-             │                              │                   │
-             ├──────────────────────────────────────────────────+──►  SEGURO
-             │
-        BENEFICIO: Prevención proactiva + Costo de remediación mínimo
-```
 
 **Mejoras del Proceso Propuesto:**
 
@@ -551,20 +492,6 @@ fieldnames = ["type", "severity", "file", "line", "content"]
 
 #### a) Diagrama de Paquetes
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    SecretScanner System                       │
-└──────────────────────────────────────────────────────────────┘
-
-    ┌─────────────────────────┬──────────────────────────────┐
-    │                         │                              │
-    ▼                         ▼                              ▼
-┌──────────────┐      ┌──────────────┐           ┌──────────────┐
-│  presentation│      │   Core Logic │           │   Output     │
-│   (CLI)      │      │   (Scanner)  │           │  (Reports)   │
-└──────────────┘      └──────────────┘           └──────────────┘
-    │                     │                          │
-main.py       ┌─────────────────────────┐    reporter.py
 colorama      │                         │
 argparse      │  scanner/               │    JSON format
               │  - patterns.py          │    CSV format
@@ -605,52 +532,8 @@ patterns.py
 
 #### b) Diagrama de Casos de Uso
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                  SecretScanner System                    │
-└─────────────────────────────────────────────────────────┘
+![Diagrama de Casos de Uso del Sistema](./media/casos_de_uso.png)
 
-    ┌─────────────────────┐
-    │  Desarrolladores    │
-    │  DevOps Engineers   │
-    │  Security Analysts  │
-    └──────────┬──────────┘
-               │
-        ┌──────┴──────┐
-        │             │
-        ▼             ▼
-    ┌────────────────────┐
-    │ Escanear Path      │
-    │ (RF-001)           │
-    └────────┬───────────┘
-             │
-        ┌────┴─────┬─────────┬────────────┐
-        │           │         │            │
-        ▼           ▼         ▼            ▼
-    ┌──────┐  ┌──────┐  ┌─────┐  ┌──────────┐
-    │ Det. │  │ Det. │  │Det. │  │ Det.    │
-    │GitHub│  │ AWS  │  │ JWT │  │Passwords│
-    │Token │  │ Keys │  │Token│  │         │
-    └──────┘  └──────┘  └─────┘  └──────────┘
-        │           │         │            │
-        └──────┬─────┴─────────┴────────────┘
-               │
-               ▼
-        ┌────────────────────┐
-        │ Procesar Findings  │
-        │ - Mask secrets     │
-        │ - Classify severity│
-        └────────┬───────────┘
-                 │
-            ┌────┴────┐
-            │          │
-            ▼          ▼
-        ┌────────┐  ┌──────────┐
-        │ Mostrar│  │ Exportar │
-        │Console │  │JSON/CSV  │
-        │(RF-12) │  │(RF13/14) │
-        └────────┘  └──────────┘
-```
 
 ---
 
@@ -780,110 +663,15 @@ ScanResult = {
 
 #### b) Diagrama de Actividades con Objetos
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│           File Scanner Execution Flow with Objects              │
-└─────────────────────────────────────────────────────────────────┘
+![Diagrama de Actividades con Objetos](./media/actividad_procesos.png)
 
-[Scanner: scan_path()]
-     │
-     ├─► Load Pattern[8] from patterns.py
-     │   └─► Each Pattern compiled with Pattern.severity
-     │
-     ├─► os.walk() starting from root
-     │   ├─► Filter directories (ignore .git, __pycache__)
-     │   └─► Build files_to_scan: List[Path]
-     │
-     ├─► For each filepath in files_to_scan:
-     │   │
-     │   ├─► _is_text_file(filepath)
-     │   │   ├─► Check suffix in BINARY_EXTENSIONS
-     │   │   └─► Scan for null bytes
-     │   │
-     │   └─► _scan_file(filepath, findings)
-     │       │
-     │       └─► For each line in file:
-     │           │
-     │           └─► For each Pattern in PATTERNS:
-     │               │
-     │               ├─► Pattern.pattern.search(line)
-     │               │
-     │               └─► IF MATCH:
-     │                   │
-     │                   ├─► Create Finding object:
-     │                   │   ├─ type = Pattern.name
-     │                   │   ├─ severity = Pattern.severity
-     │                   │   ├─ file = filepath
-     │                   │   ├─ line = lineno
-     │                   │   └─ content = _mask_secret(line)
-     │                   │
-     │                   └─► findings.append(Finding)
-     │
-     └─► Return findings: List[Finding]
-
-[Reporter: export]
-     │
-     ├─► export_json(findings, output_path)
-     │   ├─► Create Finding[].to_json()
-     │   └─► Write to file
-     │
-     └─► export_csv(findings, output_path)
-         ├─► Create CSV headers from Finding
-         └─► Write rows from Finding[]
-```
 
 ---
 
 #### c) Diagrama de Secuencia
 
-```
-User                CLI              Scanner            Reporter          File System
- │                  │                 │                  │                 │
- │─ python main.py ─►                │                  │                 │
- │   --path .       │                 │                  │                 │
- │                  │                 │                  │                 │
- │                  ├─ Parse Args    │                  │                 │
- │                  │                 │                  │                 │
- │                  ├─ Validate Path ◄────────────────────────────────────┤
- │                  │  (.exists())    │                  │                 │
- │                  │                 │                  │                 │
- │                  ├─ scan_path() ──►                  │                 │
- │                  │   (str,verbose) │                 │                 │
- │                  │                 │                 │                 │
- │                  │                 ├─ Load PATTERNS  │                 │
- │                  │                 │                 │                 │
- │                  │                 ├─ os.walk() ────────────────────────► 
- │                  │                 │   (recursive)   │                 │
- │                  │                 │◄────────────────────────────────────
- │                  │                 │  files[]        │                 │
- │                  │                 │                 │                 │
- │                  │                 ├─ For file in files:
- │                  │                 │                 │                 │
- │                  │                 ├─ is_text()◄────────────────────────►
- │                  │                 │   (check)       │                 │
- │                  │                 │                 │                 │
- │                  │                 ├─ scan_file() ──────────────────────►
- │                  │                 │  (if text)      │                 │
- │                  │                 │◄────────────────────────────────────
- │                  │                 │  findings[]     │                 │
- │                  │                 │                 │                 │
- │                  │◄─ findings ─────┤                 │                 │
- │                  │   List[Finding] │                 │                 │
- │                  │                 │                 │                 │
- │                  ├─ Print findings │                 │                 │
- │                  │ (if > 0)        │                 │                 │
- │                  │                 │                 │                 │
- │                  ├─ IF --output j  ├─> export_json()►                 │
- │                  │   |  --output cv ├─> export_csv() ├─ Write file───► 
- │                  │                 │                 │  output/ ┄ ─────┤
- │                  │                 │                 │                 │
- │                  ├─ Print summary  │                 │                 │
- │                  │ (count, path)   │                 │                 │
- │                  │                 │                 │                 │
- │◄─ Exit Code ─────┤                 │                 │                 │
- │  (0 or 1)        │                 │                 │                 │
- │                  │                 │                 │                 │
-```
+![Diagrama de Secuencia CLI](./media/secuencia_escaneo.png)
+
 
 ---
 
@@ -1012,48 +800,8 @@ Endpoints Expuestos:
 
 ---
 
+![Estructura del Monorepo](./media/directorio_monorepo.png)
 
-```
-proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/
-│
-├── run_web.py                      # Lanzador local del servidor web
-├── Dockerfile                      # Archivo de contenedorización Docker
-├── docker-compose.yml              # Orquestación de contenedores local
-├── render.yaml                     # Blueprint de Render (Infraestructura como código)
-├── requirements.txt                # Dependencias (fastapi, python-multipart, uvicorn, colorama)
-├── README.md                       # Manual de usuario principal
-│
-├── src/secret_scanner/             # Código fuente del sistema
-│   ├── main.py                     # Entry point CLI
-│   ├── mcp_server.py               # Servidor FastMCP para IA
-│   ├── scanner/                    # Paquete lógico del motor
-│   │   ├── __init__.py
-│   │   ├── patterns.py             # Patrones regex compilados
-│   │   ├── file_scanner.py         # Motor de escaneo recursivo
-│   │   └── reporter.py             # Exportadores JSON/CSV
-│   └── web/                        # Servidor Web FastAPI
-│       ├── app.py                  # Rutas REST del backend
-│       └── static/                 # UI Frontend SPA
-│           ├── index.html          # Panel Dashboard en Glassmorphism
-│           ├── styles.css          # Estilos CSS oscuros y translúcidos
-│           └── app.js              # Enrutador reactivo y utilidades
-│
-├── tests/                          # Suite de pruebas unitarias
-│   ├── __init__.py
-│   ├── test_file_scanner.py
-│   ├── test_patterns.py
-│   ├── test_reporter.py
-│   └── test_web_api.py             # Pruebas de validación de endpoints y utilidades
-│
-├── docs/                           # Documentación de diseño
-│   ├── media/                      # Archivos de diagramas (.puml y .png)
-│   ├── FD01-Informe-Factibilidad.md
-│   ├── FD02-Informe-Vision.md
-│   ├── FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md (este archivo)
-│   ├── FD04-Informe-Arquitectura.md
-│   ├── FD05-Informe-Proyecto-Final.md
-│   └── FD06-Propuesta-Proyecto.md
-```
 
 
 ---

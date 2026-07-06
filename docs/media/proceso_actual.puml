@@ -1,0 +1,28 @@
+@startuml proceso_actual
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam sequence {
+    ActorBorderColor #6366f1
+    ActorBackgroundColor #111827
+    ActorFontColor #f3f4f6
+    LifeLineBorderColor #6366f1
+    LifeLineBackgroundColor #1f2937
+    ParticipantBorderColor #6366f1
+    ParticipantBackgroundColor #111827
+    ParticipantFontColor #f3f4f6
+    ArrowColor #6366f1
+}
+
+actor Desarrollador as dev
+participant "Sistema de Control (Repo)" as repo
+actor DevOps as devops
+
+dev -> dev : [1] Escribir código
+dev -> repo : [2] Commit con secretos (sin validar)
+repo -> repo : [3] Almacenar en repositorio
+repo -> devops : [4] Push a producción (despliegue)
+devops -> devops : [5] Detectar breach de seguridad (reactivo)
+devops -> devops : [6] Responder ante incidente
+devops -> dev : [7] Iniciar remediación (rotar claves, limpiar logs)
+note over dev, devops : PROBLEMA: Secrets expuestos antes de detección. Costo de remediación alto.
+@enduml
