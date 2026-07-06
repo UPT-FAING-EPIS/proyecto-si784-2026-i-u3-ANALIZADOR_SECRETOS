@@ -1,0 +1,65 @@
+@startuml clases_sistema
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam class {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+    HeaderBackgroundColor #1f2937
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+class Main {
+    +main() int
+    +_print_findings(findings: list) None
+    +_print_summary(total: int, findings: list, path: str) None
+    +_count_files(path: str) int
+}
+
+class FileScanner {
+    +BINARY_EXTENSIONS: set<str>
+    +IGNORED_DIRS: set<str>
+    +scan_path(path: str, verbose: bool) List<Dict>
+    +_walk_directory(root: Path) List<Path>
+    +_scan_file(filepath: Path, findings: List) None
+    +_is_text_file(filepath: Path) bool
+    +_mask_secret(text: str) str
+}
+
+class Patterns {
+    +PATTERNS: List<Dict>
+}
+
+class Reporter {
+    +OUTPUT_DIR: str
+    +export_json(findings: List, output_path: str) None
+    +export_csv(findings: List, output_path: str) None
+    +_ensure_output_dir(output_path: str) None
+}
+
+class MCPServer {
+    +mcp: FastMCP
+    +scan_secrets(target_path: str) str
+    +main() None
+}
+
+class WebServer {
+    +app: FastAPI
+    +scan_directory(req: ScanPathRequest) Dict
+    +scan_github_repository(req: ScanGitRequest) Dict
+    +scan_zip_upload(file: UploadFile) Dict
+    +scan_code(req: ScanCodeRequest) Dict
+    +check_entropy(req: EntropyRequest) Dict
+    +generate_secret(req: GenerateSecretRequest) Dict
+    +check_custom_pattern(req: CustomPatternRequest) Dict
+}
+
+Main ..> FileScanner : utiliza
+Main ..> Reporter : utiliza
+MCPServer ..> FileScanner : utiliza
+WebServer ..> FileScanner : utiliza
+WebServer ..> Reporter : utiliza
+FileScanner ..> Patterns : lee
+@enduml

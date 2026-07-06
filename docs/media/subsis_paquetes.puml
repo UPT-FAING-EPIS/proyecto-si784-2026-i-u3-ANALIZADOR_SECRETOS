@@ -1,0 +1,48 @@
+@startuml subsis_paquetes
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam package {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam component {
+    BorderColor #818cf8
+    BackgroundColor #1f2937
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+package "Capa de Presentación" as Pres {
+    component "main.py\n(CLI)" as main
+    component "web/static/\n(Frontend)" as frontend
+}
+
+package "Capa de Servicios / Red" as Serv {
+    component "web/app.py\n(FastAPI Server)" as webserver
+    component "mcp_server.py\n(Servidor MCP)" as mcp
+}
+
+package "Capa de Lógica de Negocio" as Core {
+    component "file_scanner.py\n(Motor de escaneo)" as scanner
+    component "patterns.py\n(Patrones)" as patterns
+}
+
+package "Capa de Soporte y Reportes" as Repo {
+    component "reporter.py\n(Exportaciones)" as reporter
+}
+
+main --> scanner
+main --> reporter
+
+webserver --> scanner
+webserver --> reporter
+frontend --> webserver : REST API
+
+mcp --> scanner
+mcp --> reporter
+
+scanner --> patterns
+@enduml

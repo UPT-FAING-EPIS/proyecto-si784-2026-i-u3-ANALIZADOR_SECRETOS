@@ -1,0 +1,9 @@
+@startgantt
+title Plan de Ruta Técnica - SecretScanner
+dateFormat YYYY-MM-DD
+
+[Fase 1: Motor CLI & Servidor MCP Core] on {Developer} lasts 30 days and starts 2026-03-01
+[Fase 2: Consola Web FastAPI & Despliegue Render (Completado)] on {Developer} lasts 15 days and starts 2026-06-20
+[Fase 3: Integración de GitPython (Historial Git)] on {Developer} lasts 15 days and starts 2026-08-01
+[Fase 4: Detección Semántica por Machine Learning] on {Developer} lasts 20 days and starts 2026-08-16
+@endgantt

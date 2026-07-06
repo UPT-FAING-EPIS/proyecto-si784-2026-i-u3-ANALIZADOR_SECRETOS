@@ -1,0 +1,65 @@
+@startuml secuencia_escaneo_web
+autonumber
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam participant {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam actor {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+actor Dev as "👨‍💻 Desarrollador"
+participant AppJS as "app.js (Client)"
+participant AppPy as "app.py (Server)"
+participant GitHub as "GitHub Server"
+participant Scanner as "file_scanner.py"
+
+== Escaneo de Repositorio Remoto (GitHub) ==
+Dev -> AppJS: Introduce URL de GitHub y hace clic en Escanear
+activate AppJS
+AppJS -> AppPy: POST /api/scan-git {clone_url}
+activate AppPy
+AppPy -> AppPy: Parsea usuario y repositorio
+AppPy -> GitHub: Descarga ZIP de la rama main/master
+activate GitHub
+GitHub --> AppPy: Devuelve bytes del ZIP
+deactivate GitHub
+AppPy -> AppPy: Crea directorio temporal\ny extrae ZIP en disco
+AppPy -> Scanner: scan_path(temp_dir)
+activate Scanner
+Scanner --> AppPy: Retorna lista de findings
+deactivate Scanner
+AppPy -> AppPy: Normaliza rutas de archivos\ny elimina directorio temporal
+AppPy --> AppJS: Devuelve resultados en JSON
+deactivate AppPy
+AppJS -> AppJS: Renderiza findings en la tabla
+AppJS --> Dev: Muestra resumen en la UI
+deactivate AppJS
+
+== Escaneo de Carga de Archivo (.zip) ==
+Dev -> AppJS: Arrastra y suelta archivo .zip local
+activate AppJS
+Dev -> AppJS: Hace clic en Comenzar Análisis
+AppJS -> AppPy: POST /api/scan-upload (Multipart File)
+activate AppPy
+AppPy -> AppPy: Crea directorio temporal\ny guarda archivo ZIP
+AppPy -> AppPy: Extrae ZIP en disco
+AppPy -> Scanner: scan_path(temp_dir)
+activate Scanner
+Scanner --> AppPy: Retorna lista de findings
+deactivate Scanner
+AppPy -> AppPy: Normaliza rutas de archivos\ny elimina directorio temporal
+AppPy --> AppJS: Devuelve resultados en JSON
+deactivate AppPy
+AppJS -> AppJS: Renderiza findings en la tabla
+AppJS --> Dev: Muestra resumen en la UI
+deactivate AppJS
+@enduml

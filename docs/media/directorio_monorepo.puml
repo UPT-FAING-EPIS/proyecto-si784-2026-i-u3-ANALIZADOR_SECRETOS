@@ -1,0 +1,54 @@
+@startuml directorio_monorepo
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam package {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam component {
+    BorderColor #818cf8
+    BackgroundColor #1f2937
+    FontColor #f3f4f6
+}
+
+package "proyecto-ANALIZADOR_SECRETOS (Monorepo)" {
+    component "pyproject.toml" as pyproject
+    component "requirements.txt" as reqs
+    component "run_web.py" as run_web
+    component "Dockerfile" as dockerfile
+    component "render.yaml" as render
+    
+    package "src/secret_scanner/" as Src {
+        component "main.py" as main
+        component "mcp_server.py" as mcp
+        
+        package "scanner/" as ScannerPkg {
+            component "file_scanner.py" as file_scanner
+            component "patterns.py" as patterns
+            component "reporter.py" as reporter
+        }
+        
+        package "web/" as WebPkg {
+            component "app.py" as webapp
+            package "static/" as StaticPkg {
+                component "index.html" as html
+                component "styles.css" as css
+                component "app.js" as js
+            }
+        }
+    }
+    
+    package "tests/" as Tests {
+        component "test_file_scanner.py" as test_scanner
+        component "test_patterns.py" as test_patterns
+        component "test_reporter.py" as test_reporter
+        component "test_web_api.py" as test_web
+    }
+    
+    package "vscode-extension/" as Extension {
+        component "package.json" as vscode_pkg
+        component "src/extension.ts" as vscode_src
+    }
+}
+@enduml

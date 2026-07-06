@@ -1,0 +1,48 @@
+@startuml casos_de_uso
+left to right direction
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam actor {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam usecase {
+    BorderColor #818cf8
+    BackgroundColor #1f2937
+    FontColor #f3f4f6
+    ArrowColor #6366f1
+}
+
+actor "👨‍💻 Desarrollador" as Dev
+actor "🛡️ Administrador de Seguridad" as Sec
+actor "⚙️ Pipeline CI/CD" as CI
+actor "🤖 Agente de IA" as AI
+
+rectangle SecretScanner {
+    usecase "UC-01: Escanear Path Local" as UC1
+    usecase "UC-02: Exportar Reportes (JSON/CSV)" as UC2
+    usecase "UC-03: Bloquear Integración Insegura" as UC3
+    usecase "UC-04: Analizar mediante MCP" as UC4
+    usecase "UC-05: Escanear Repositorio GitHub" as UC5
+    usecase "UC-06: Escanear Carga ZIP" as UC6
+    usecase "UC-07: Auditar Entropía y Complejidad" as UC7
+    usecase "UC-08: Generar Secretos Seguros" as UC8
+}
+
+Dev --> UC1
+Dev --> UC2
+Dev --> UC5
+Dev --> UC6
+Dev --> UC7
+Dev --> UC8
+
+Sec --> UC1
+Sec --> UC2
+Sec --> UC7
+
+CI --> UC1
+CI --> UC3
+
+AI --> UC4
+@enduml

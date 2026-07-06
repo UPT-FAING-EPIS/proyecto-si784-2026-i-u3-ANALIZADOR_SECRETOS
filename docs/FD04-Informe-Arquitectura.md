@@ -91,39 +91,8 @@ La Vista de Caso de Uso representa el comportamiento externo del sistema desde e
 
 ### Diagrama de Casos de Uso
 
-```mermaid
-flowchart LR
+![Diagrama de Casos de Uso](./media/casos_de_uso.png)
 
-    %% Actores
-    Dev["👨‍💻 Desarrollador"]
-    Sec["🛡️ Administrador de Seguridad"]
-    CI["⚙️ Pipeline CI/CD"]
-    AI["🤖 Agente de IA"]
-
-    %% Límite del sistema
-    subgraph Sistema["SecretScanner"]
-        direction TB
-
-        UC1(["UC-01<br/>Escanear Path Local"])
-        UC2(["UC-02<br/>Exportar Reportes"])
-        UC3(["UC-03<br/>Bloquear Integración Insegura"])
-        UC4(["UC-04<br/>Analizar mediante MCP"])
-    end
-
-    %% Relaciones
-    Dev --> UC1
-    Dev --> UC2
-
-    Sec --> UC1
-    Sec --> UC2
-
-    CI --> UC1
-    CI --> UC3
-
-    AI --> UC4
-
-    UC4 -. «include» .-> UC1
-```
 
 ### Descripción de Casos de Uso Principales
 
@@ -158,35 +127,8 @@ La **Vista Lógica** describe la organización estructural del sistema, mostrand
 
 ### Diagrama de Subsistemas (Paquetes)
 
-```mermaid
-graph TD
+![Diagrama de Subsistemas](./media/subsis_paquetes.png)
 
-    subgraph Presentacion["Capa de Presentación (CLI)"]
-        main["main.py<br/>(Punto de entrada)"]
-    end
-
-    subgraph Core["Capa de Lógica de Negocio"]
-        scanner["file_scanner.py<br/>(Motor de escaneo)"]
-        patterns["patterns.py<br/>(Catálogo de patrones)"]
-    end
-
-    subgraph Persistencia["Capa de Reportes"]
-        reporter["reporter.py<br/>(Generación y exportación de reportes)"]
-    end
-
-    subgraph Agente["Capa MCP"]
-        mcp["mcp_server.py<br/>(Servidor FastMCP)"]
-    end
-
-    %% Dependencias
-    main --> scanner
-    main --> reporter
-
-    scanner --> patterns
-
-    mcp --> scanner
-    mcp --> reporter
-```
 
 ### Descripción de los subsistemas
 
@@ -200,94 +142,30 @@ graph TD
 
 ### Diagrama de Secuencia (Vista de Diseño)
 
-El siguiente diagrama ilustra el flujo dinámico de llamadas a funciones al escanear un directorio local y exportar los reportes:
+El siguiente diagrama ilustra el flujo dinámico de llamadas a funciones al escanear un directorio local y exportar los reportes usando la CLI:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Dev as Desarrollador
-    participant Main as main.py
-    participant Scanner as file_scanner.py
-    participant Patterns as patterns.py
-    participant Reporter as reporter.py
+![Diagrama de Secuencia CLI](./media/secuencia_escaneo.png)
 
-    Dev->>Main: Ejecuta CLI (path, output="json")
-    Main->>Scanner: scan_path(target_path, verbose)
-    activate Scanner
-    Scanner->>Scanner: _walk_directory(root)
-    loop Para cada archivo encontrado
-        Scanner->>Scanner: _is_text_file(filepath)
-        alt Es archivo de texto válido
-            Scanner->>Scanner: _scan_file(filepath, findings)
-            activate Scanner
-            loop Para cada línea y cada patrón en PATTERNS
-                Scanner->>Patterns: Match regex
-                Patterns-->>Scanner: Match detectado
-                Scanner->>Scanner: _mask_secret(line)
-                Scanner->>Scanner: Append a findings list
-            end
-            deactivate Scanner
-        end
-    end
-    Scanner-->>Main: Retorna lista findings
-    deactivate Scanner
+### Diagrama de Secuencia Web (Auditoría Remota y Cargas)
 
-    alt Hay findings y output == "json"
-        Main->>Reporter: export_json(findings, "output/report.json")
-        activate Reporter
-        Reporter->>Reporter: _ensure_output_dir()
-        Reporter-->>Main: Archivo guardado con éxito
-        deactivate Reporter
-    end
+El siguiente diagrama detalla la interacción dinámica para el escaneo de repositorios mediante clonación remota en memoria y carga de archivos ZIP comprimidos mediante el servidor FastAPI:
 
-    Main-->>Dev: Imprime resumen y retorna código de salida
-```
+![Diagrama de Secuencia Web](./media/secuencia_escaneo_web.png)
+
 
 ### Diagrama de Colaboración (Vista de Diseño)
 
 El diagrama de colaboración destaca las relaciones estructurales entre los objetos de software que participan en el proceso de escaneo:
 
-```mermaid
-graph TD
-    Main["1: Main Loop (main.py)"]
-    Scanner["2: Path Scanner (file_scanner.py)"]
-    Patterns["3: Patterns Database (patterns.py)"]
-    Reporter["4: Data Exporter (reporter.py)"]
+![Diagrama de Colaboración](./media/colaboracion.png)
 
-    Main -- "Llama a scan_path()" --> Scanner
-    Scanner -- "Itera sobre regex en" --> Patterns
-    Main -- "Llama a export_json()/export_csv()" --> Reporter
-```
 
 ### Diagrama de Objetos
 
 El siguiente diagrama de objetos representa una instantánea del estado del sistema durante la ejecución, mostrando un hallazgo (`Finding`) generado al detectar un token de GitHub en el archivo `config.py`. Asimismo, se ilustra la relación entre el hallazgo y el patrón (`Pattern`) utilizado para identificar la credencial.
 
-```mermaid
-graph LR
+![Diagrama de Objetos](./media/objeto_finding.png)
 
-    subgraph Runtime["Instancias en tiempo de ejecución"]
-
-        Finding["<b>f1 : Finding</b><br/><br/>
-        Tipo: GitHub Token<br/>
-        Severidad: HIGH<br/>
-        Archivo: src/config.py<br/>
-        Línea: 12<br/>
-        Valor: ghp_abc123***xyz"]
-
-    end
-
-    subgraph Catalogo["Catálogo de Patrones"]
-
-        Pattern["<b>p1 : Pattern</b><br/><br/>
-        Nombre: GitHub Token<br/>
-        Severidad: HIGH<br/>
-        Expresión Regular"]
-
-    end
-
-    Finding -->|coincide con| Pattern
-```
 
 **Descripción de los objetos**
 
@@ -301,89 +179,15 @@ graph LR
 
 Las clases principales y sus relaciones de dependencia estructural en el monorepo son las siguientes:
 
-```mermaid
-classDiagram
-    class Main {
-        +main() int
-        +_print_findings(findings: list) None
-        +_print_summary(total: int, findings: list, path: str) None
-        +_count_files(path: str) int
-    }
+![Diagrama de Clases](./media/clases_sistema.png)
 
-    class FileScanner {
-        +BINARY_EXTENSIONS: set~str~
-        +IGNORED_DIRS: set~str~
-        +scan_path(path: str, verbose: bool) List~Dict~
-        +_walk_directory(root: Path) List~Path~
-        +_scan_file(filepath: Path, findings: List) None
-        +_is_text_file(filepath: Path) bool
-        +_mask_secret(text: str) str
-    }
-
-    class Patterns {
-        +PATTERNS: List~Dict~
-    }
-
-    class Reporter {
-        +OUTPUT_DIR: str
-        +export_json(findings: List, output_path: str) None
-        +export_csv(findings: List, output_path: str) None
-        +_ensure_output_dir(output_path: str) None
-    }
-
-    class MCPServer {
-        +mcp: FastMCP
-        +scan_secrets(target_path: str) str
-        +main() None
-    }
-
-    Main ..> FileScanner : utiliza
-    Main ..> Reporter : utiliza
-    MCPServer ..> FileScanner : utiliza
-    FileScanner ..> Patterns : lee
-```
 
 ### Diagrama de Base de Datos (Relacional o No Relacional)
 
 Aunque la Fase 1 del sistema **SecretScanner** opera sin base de datos persistente (orientada a archivos), una futura migración a base de datos relacional para soportar un panel multiusuario e histórico de auditoría requerirá el siguiente diseño lógico relacional:
 
-```mermaid
-erDiagram
-    PROYECTO {
-        int id PK
-        string nombre
-        string ruta_local
-        datetime fecha_creacion
-    }
-    ESCANEADO {
-        int id PK
-        int proyecto_id FK
-        datetime fecha_ejecucion
-        int total_archivos
-        int total_hallazgos
-        string exit_code
-    }
-    HALLAZGO {
-        int id PK
-        int escaneado_id FK
-        string tipo_secreto
-        string severidad
-        string ruta_archivo
-        int numero_linea
-        string contenido_enmascarado
-    }
-    PATRON_DETECCION {
-        int id PK
-        string nombre_patron
-        string expresion_regular
-        string severidad_defecto
-        boolean activo
-    }
+![Diagrama Entidad-Relación](./media/base_datos.png)
 
-    PROYECTO ||--o{ ESCANEADO : "registra"
-    ESCANEADO ||--o{ HALLAZGO : "contiene"
-    HALLAZGO }o--|| PATRON_DETECCION : "clasificado por"
-```
 
 ---
 
@@ -395,66 +199,15 @@ La Vista de Implementación organiza el código fuente físico del monorepo en s
 
 El siguiente diagrama detalla la estructura física del proyecto en disco y sus dependencias de importación:
 
-```mermaid
-graph TD
-    subgraph Root ["secret-scanner (Monorepo)"]
-        pyproject["pyproject.toml (Setuptools)"]
-        reqs["requirements.txt"]
-        
-        subgraph Source ["src/secret_scanner/"]
-            main_py["main.py (CLI)"]
-            mcp_py["mcp_server.py (MCP)"]
-            
-            subgraph ScannerPkg ["scanner/"]
-                init_scanner["__init__.py"]
-                file_scanner_py["file_scanner.py"]
-                patterns_py["patterns.py"]
-                reporter_py["reporter.py"]
-            end
-        end
+![Diagrama de Estructura de Directorios](./media/directorio_monorepo.png)
 
-        subgraph Tests ["tests/"]
-            test_patterns["test_patterns.py"]
-            test_scanner["test_file_scanner.py"]
-        end
-    end
-
-    main_py --> file_scanner_py
-    main_py --> reporter_py
-    mcp_py --> file_scanner_py
-    file_scanner_py --> patterns_py
-    test_patterns --> patterns_py
-    test_scanner --> file_scanner_py
-```
 
 ### Diagrama de Arquitectura del Sistema (Diagrama de Componentes)
 
 El siguiente diagrama muestra los principales componentes lógicos del sistema y las dependencias entre ellos durante la ejecución.
 
-```mermaid
-graph LR
+![Diagrama de Componentes](./media/componentes.png)
 
-    CLI["Interfaz CLI"]
-    MCP["Servidor MCP"]
-    Controller["Controlador del Scanner"]
-    Extractor["Extractor de Archivos"]
-    Filter["Filtro de Exclusiones"]
-    Regex["Motor de Expresiones Regulares"]
-    Patterns["Base de Patrones"]
-    Masker["Enmascarador de Datos"]
-    Reporter["Generador de Reportes"]
-
-    CLI --> Controller
-    MCP --> Controller
-
-    Controller --> Extractor
-    Controller --> Filter
-    Controller --> Regex
-    Controller --> Masker
-    Controller --> Reporter
-
-    Regex --> Patterns
-```
 
 ## 10. Vista de Procesos
 
@@ -462,55 +215,10 @@ La Vista de Procesos explica el comportamiento del flujo de control de un hilo d
 
 ### Diagrama de Procesos del Sistema (Diagrama de Actividad)
 
-```mermaid
-stateDiagram-v2
-    [*] --> Iniciar_Proceso
-    Iniciar_Proceso --> Parsear_Argumentos
-    Parsear_Argumentos --> Validar_Ruta
-    
-    state Validar_Ruta <<choice>>
-    Validar_Ruta --> Ruta_Invalida : Si no existe
-    Validar_Ruta --> Listar_Archivos : Si existe
+El flujo de control lógico para un ciclo de escaneo se describe en el siguiente diagrama de actividad:
 
-    Ruta_Invalida --> Imprimir_Error
-    Imprimir_Error --> Finalizar_Con_Error
+![Diagrama de Actividad](./media/actividad_procesos.png)
 
-    state Listar_Archivos {
-        [*] --> Recorrer_Directorios
-        Recorrer_Directorios --> Filtrar_Directorios_Ignorados
-        Filtrar_Directorios_Ignorados --> Retornar_Rutas
-    }
-
-    Listar_Archivos --> Analizar_Archivos
-
-    state Analizar_Archivos {
-        [*] --> Verificar_Tipo_Texto
-        Verificar_Tipo_Texto --> Excluir_Binario : Si es binario
-        Verificar_Tipo_Texto --> Leer_Lineas : Si es texto
-        Leer_Lineas --> Buscar_Coincidencias_Regex
-        Buscar_Coincidencias_Regex --> Enmascarar_Secretos : Si hay coincidencia
-        Enmascarar_Secretos --> Guardar_Findings
-    }
-
-    Analizar_Archivos --> Exportar_Resultados
-
-    state Exportar_Resultados <<choice>>
-    Exportar_Resultados --> Generar_Reporte : Si se solicitó --output
-    Exportar_Resultados --> Mostrar_Resultados_Consola : Si no
-
-    Generar_Reporte --> Escribir_Disco
-    Escribir_Disco --> Mostrar_Resultados_Consola
-
-    Mostrar_Resultados_Consola --> Verificar_Exit_Code
-
-    state Verificar_Exit_Code <<choice>>
-    Verificar_Exit_Code --> Finalizar_Con_1 : Si hay findings
-    Verificar_Exit_Code --> Finalizar_Con_0 : Si no hay findings
-
-    Finalizar_Con_Error --> [*]
-    Finalizar_Con_1 --> [*]
-    Finalizar_Con_0 --> [*]
-```
 
 ---
 
@@ -520,33 +228,43 @@ La Vista de Despliegue muestra la asignación física de los módulos de softwar
 
 ### Diagrama de Despliegue
 
-```mermaid
-graph TD
-    subgraph Estacion_Desarrollo ["Entorno Local del Desarrollador (PC)"]
-        direction TB
-        cli_process["Proceso Python: secret-scanner CLI"]
-        mcp_process["Proceso Python: secret-scanner-mcp"]
-        disk_files["Almacenamiento Local (Código Fuente & output/ report.json/csv)"]
-        cli_process -.->|Lectura / Escritura| disk_files
-        mcp_process -.->|Lectura| disk_files
-    end
+La topología de hardware e infraestructura de red que hospeda el ecosistema se ilustra a continuación:
 
-    subgraph CI_CD ["Entorno de Integración Continua (GitHub Actions Runner)"]
-        actions_runner["Contenedor Virtual de Ejecución (Ubuntu Runner)"]
-        actions_script["GitHub Actions Workflow (python -m secret_scanner.main)"]
-        git_workspace["Espacio de Trabajo Git Clonado"]
-        actions_runner --> actions_script
-        actions_script -.->|Escanea| git_workspace
-    end
+![Diagrama de Despliegue](./media/despliegue_fisico.png)
 
-    subgraph Cliente_Externo ["Estación de IA del Agente"]
-        agent_client["Cliente MCP (ej. Cursor IDE, Claude Desktop)"]
-    end
+### Descripción de Nodos de Despliegue
 
-    agent_client -->|Llamadas JSON-RPC sobre Stdio| mcp_process
-```
+El ecosistema físico de **SecretScanner** está compuesto por cinco entornos de hardware y ejecución independientes:
+
+1. **Estación de Trabajo Local (PC Desarrollador)**:
+   * **Hardware**: CPU x86/ARM, mínimo 4 GB de memoria RAM y almacenamiento local SSD.
+   * **Software**: Sistema operativo Windows, macOS o Linux con el runtime de **Python 3.10+** instalado y el IDE de **VS Code**.
+   * **Procesos**:
+     * **CLI (`main.py`)**: Se ejecuta manualmente o mediante subprocesos locales a demanda, accediendo directamente al sistema de archivos local para auditar paths físicos.
+     * **FastMCP Server (`mcp_server.py`)**: Corre en segundo plano y expone herramientas del escáner en formato JSON-RPC a través del canal de entrada/salida estándar (`stdio`).
+
+2. **GitHub Cloud Infrastructure (GitHub Actions Runner)**:
+   * **Hardware**: Contenedores virtuales aprovisionados dinámicamente por GitHub (runners de Ubuntu/Linux de 2 cores y 7 GB de RAM).
+   * **Software**: Entorno virtual con Python 3.10+ y la suite de pruebas `pytest`.
+   * **Procesos**: El script de workflow de integración continua (`ci.yml`) descarga el código fuente y ejecuta de manera automatizada las pruebas unitarias y el análisis de cobertura. El script de auto-generación de diagramas (`plantuml.yml`) descarga el compilador oficial de PlantUML, procesa los diagramas `.puml` a imágenes `.png` y realiza un auto-commit seguro.
+
+3. **Render Cloud Hosting (PaaS - Servidor Web)**:
+   * **Hardware**: Instancia de microservicios Linux en la nube de Render (Free o Starter Tier).
+   * **Software**: Engine de contenedores **Docker** leyendo las instrucciones del `Dockerfile` base.
+   * **Procesos**: Inicia el servidor web FastAPI mediante el servidor ASGI **Uvicorn** expuesto en el puerto `8080` (con redirección automática de tráfico HTTPS por proxy de Render). Recibe peticiones asíncronas REST del cliente, descarga zipballs temporales desde GitHub en directorios del contenedor y ejecuta el motor `file_scanner.py` en memoria aislada, borrando cualquier residuo de código al completar el análisis.
+
+4. **Cliente Navegador (Estación de Usuario)**:
+   * **Hardware**: PC, tablet o smartphone conectado a internet con navegador moderno (Chrome, Firefox, Safari, Edge).
+   * **Software**: Motor HTML5/CSS3 y runtime de JavaScript V8.
+   * **Procesos**: Renderiza la Single-Page Application (SPA) del frontend aplicando la estética oscura translúcida (*glassmorphism*). Realiza peticiones asíncronas (`fetch`) al servidor FastAPI en Render y realiza tareas del lado del cliente como la estimación de complejidad de contraseñas (entropía) y plantillas de remediación.
+
+5. **Estación de IA del Agente**:
+   * **Hardware**: Servidores de modelos de lenguaje (ej. Anthropic Claude, Cursor IDE AI hosts).
+   * **Software**: Clientes compatibles con el protocolo MCP.
+   * **Procesos**: Realiza llamadas automatizadas a herramientas JSON-RPC para delegar al servidor local de SecretScanner la auditoría estática del espacio de trabajo abierto por el usuario.
 
 ---
+
 
 ## 12. Escenario de Funcionalidad
 
@@ -732,16 +450,7 @@ graph TD
 
 ## 21. Roadmap - Fase 2 (Futuro)
 
-```mermaid
-gantt
-    title Plan de Ruta Técnica - SecretScanner Fase 2
-    dateFormat  YYYY-MM-DD
-    section Detección Avanzada
-    Integración de GitPython (Historial completo Git) :active, 2026-08-01, 15d
-    Análisis Semántico Avanzado por Machine Learning  : 2026-08-16, 20d
-    section Persistencia y UI
-    Migración a SQLite Local e Historial               : 2026-09-05, 10d
-    Desarrollo de Panel Web de Gestión (React/FastAPI) : 2026-09-15, 25d
-    section Integraciones
-    Plugins IDE (VS Code & JetBrains)                  : 2026-10-10, 20d
-```
+### Diagrama de Gantt del Roadmap Técnico
+
+![Diagrama de Gantt](./media/roadmap_gantt.png)
+

@@ -1,0 +1,59 @@
+@startuml secuencia_escaneo
+autonumber
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam participant {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam actor {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+actor Dev as "👨‍💻 Desarrollador"
+participant Main as "main.py"
+participant Scanner as "file_scanner.py"
+participant Patterns as "patterns.py"
+participant Reporter as "reporter.py"
+
+Dev -> Main: Ejecuta CLI (path, output="json")
+activate Main
+Main -> Scanner: scan_path(target_path, verbose)
+activate Scanner
+Scanner -> Scanner: _walk_directory(root)
+loop Para cada archivo
+    Scanner -> Scanner: _is_text_file(filepath)
+    alt Es archivo de texto válido
+        Scanner -> Scanner: _scan_file(filepath, findings)
+        activate Scanner
+        loop Cada línea & patrón
+            Scanner -> Patterns: Match regex
+            activate Patterns
+            Patterns --> Scanner: Match detectado
+            deactivate Patterns
+            Scanner -> Scanner: _mask_secret(line)
+            Scanner -> Scanner: Append to findings
+        end
+        deactivate Scanner
+    end
+end
+Scanner --> Main: Retorna lista de findings
+deactivate Scanner
+
+alt Hay findings y output == "json"
+    Main -> Reporter: export_json(findings, "output/report.json")
+    activate Reporter
+    Reporter -> Reporter: _ensure_output_dir()
+    Reporter --> Main: Archivo guardado con éxito
+    deactivate Reporter
+end
+
+Main --> Dev: Imprime resumen y retorna código de salida
+deactivate Main
+@enduml

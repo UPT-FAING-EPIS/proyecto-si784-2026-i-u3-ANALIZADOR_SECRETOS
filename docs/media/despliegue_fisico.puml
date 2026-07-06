@@ -1,0 +1,52 @@
+@startuml despliegue_fisico
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam node {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam artifact {
+    BorderColor #818cf8
+    BackgroundColor #1f2937
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+node "Estación de Trabajo Local (PC Desarrollador)" as PC {
+    node "VS Code IDE" {
+        artifact "Extensión VS Code (VSIX)" as ext
+    }
+    node "Runtime de Python 3.10+" {
+        artifact "CLI App (main.py)" as cli
+        artifact "FastMCP Server (mcp_server.py)" as mcp
+    }
+    ext -.-> cli : "ejecuta mediante subproceso"
+}
+
+node "GitHub Cloud Infrastructure" as GitHub {
+    node "GitHub Actions Runner (Ubuntu)" {
+        artifact "GitHub Workflows (ci.yml)" as workflow
+    }
+}
+
+node "Render Cloud Hosting (PaaS)" as Render {
+    node "Docker Container (FastAPI Web App)" {
+        artifact "Server App (app.py)" as server_app
+    }
+}
+
+node "Cliente Navegador (Usuario)" as Client {
+    artifact "Frontend SPA (HTML/CSS/JS)" as spa
+}
+
+node "Estación de IA del Agente" as IA {
+    artifact "Cliente MCP (Claude / Cursor)" as agent_client
+}
+
+agent_client <--> mcp : "JSON-RPC (Stdio)"
+spa <--> server_app : "HTTPS / REST API"
+workflow -.-> cli : "ejecuta en pipeline"
+@enduml

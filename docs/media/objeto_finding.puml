@@ -1,0 +1,28 @@
+@startuml objeto_finding
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam object {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+object "<u>f1 : Finding</u>" as f1 {
+    type = "GitHub Token"
+    severity = "HIGH"
+    file = "src/config.py"
+    line = 12
+    content = "token = \"ghp_abc123***xyz\""
+}
+
+object "<u>p1 : Pattern</u>" as p1 {
+    name = "GitHub Token"
+    severity = "HIGH"
+    pattern = "(ghp_|gho_|ghu_|ghs_)[A-Za-z0-9_]{36,}"
+}
+
+f1 --> p1 : "coincide con"
+@enduml

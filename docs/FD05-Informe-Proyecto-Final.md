@@ -29,19 +29,24 @@ La implementación de **SecretScanner** se justifica en los siguientes pilares:
 
 ### c. Alcance
 El proyecto incluye:
-* Un motor recursivo de escaneo en Python que filtra archivos binarios y directorios de sistema de forma automática.
-* Detección activa de 8 patrones críticos de secretos mediante expresiones regulares.
-* Visualización coloreada en consola basada en niveles de severidad y exportación estructurada en JSON y CSV.
-* Un servidor Model Context Protocol (MCP) para la automatización e integración con agentes de Inteligencia Artificial locales y remotos.
+* Un motor recursivo de escaneo en Python que filtra archivos binarios y directorios de sistema.
+* Detección activa de 8 patrones críticos de secretos mediante expresiones regulares determinísticas.
+* Presentación coloreada en consola y exportación structured local a JSON y CSV.
+* Un servidor Model Context Protocol (MCP) para la comunicación JSON-RPC con clientes de Inteligencia Artificial.
+* Una extensión nativa de VS Code para alertas directas en editor al guardar.
+* Una **consola web multipropósito (FastAPI + JS)** con utilidades avanzadas de análisis remoto (GitHub URL y cargas ZIP), medidor de entropía de Shannon, generador de secretos, sandbox regex y guías de remediación.
+* Infraestructura como código (Dockerfile, docker-compose, render.yaml) lista para despliegue PaaS en Render.
 
-Quedan fuera del alcance del proyecto actual la modificación directa o eliminación (redacción) de secretos detectados en los archivos originales y la limpieza automatizada del historial de Git.
+Quedan fuera del alcance del proyecto actual la modificación directa o redacción de secretos en los archivos fuente originales y la limpieza automatizada del historial de Git.
+
 
 ---
 
 ## 3. Objetivos
 
 ### Objetivo General
-Desarrollar una herramienta de análisis estático de código fuente que detecte secretos y credenciales hardcodeadas en proyectos de software mediante expresiones regulares, con capacidad de reporte en múltiples formatos (consola, JSON, CSV) y distribución como interfaz de línea de comandos (CLI), logrando una cobertura de pruebas mínima del 80%.
+Desarrollar una suite integral de análisis estático de código fuente que detecte secretos y credenciales hardcodeadas mediante expresiones regulares, con capacidad de presentación multiplataforma (CLI, extensión de VSCode, MCP y aplicación web) y despliegue automatizado en contenedores en la nube, logrando una cobertura de pruebas mínima del 90%.
+
 
 ### Objetivos Específicos
 1. **Módulo de Detección**: Diseñar y compilar 8 expresiones regulares optimizadas para identificar tokens de GitHub, AWS Access Keys, API Keys genéricas, contraseñas, JWT, tokens de Slack, claves privadas RSA y URLs con credenciales.
@@ -98,12 +103,15 @@ Dado que el $\text{VAN} > 0$ y la relación $\text{B/C} = 52.00 > 1$, la inversi
 **Alta**. Al ser software puro distribuido digitalmente a través de Git, no genera residuos electrónicos ni consume recursos materiales significativos.
 
 ### b. Tecnología de Desarrollo
-* **Lenguaje**: Python 3.10+
-* **Framework de Pruebas**: pytest 8.x
-* **Librería de Cobertura**: pytest-cov 5.x
-* **Librería Gráfica de Consola**: colorama 0.4.6
-* **Integración MCP**: FastMCP (SDK de Contexto de Modelos en Python)
+* **Lenguajes**: Python 3.10+ (Backend), HTML5/CSS3/Vanilla JS (Frontend SPA)
+* **Framework Web**: FastAPI + Uvicorn + python-multipart
+* **Framework de Pruebas**: pytest 8.x con pytest-cov
+* **Librerías de Presentación**: colorama 0.4.6
+* **Integración MCP**: FastMCP SDK
+* **Despliegue y Virtualización**: Docker (Dockerfile / compose)
+* **Hosting en la Nube**: Render Cloud (PaaS)
 * **Entornos**: Visual Studio Code, Git, GitHub Actions (CI)
+
 
 ### c. Metodología de Implementación
 El desarrollo se estructuró siguiendo la metodología ágil XP (Programación Extrema), fundamentada en entregables correlativos:
@@ -116,7 +124,7 @@ El desarrollo se estructuró siguiendo la metodología ágil XP (Programación E
 
 ## 6. Cronograma
 
-La duración total del proyecto fue de **4 semanas (30 días)** estructurada en los siguientes hitos temporales:
+La duración total del proyecto fue de **5 semanas (35 días)** estructurada en los siguientes hitos temporales:
 
 | Hito | Fase | Duración | Fecha de Inicio | Fecha de Fin | Entregable Principal |
 |:---:|:---|:---:|:---:|:---:|:---|
@@ -124,6 +132,8 @@ La duración total del proyecto fue de **4 semanas (30 días)** estructurada en 
 | **H2** | Desarrollo del Núcleo Core | 9 días | 2026-03-06 | 2026-03-14 | Motores de escaneo, patrones regex y CLI. |
 | **H3** | QA, Pruebas y Cobertura | 8 días | 2026-03-15 | 2026-03-22 | Suite de tests con pytest y cobertura del 80%. |
 | **H4** | Servidor MCP e Integración | 8 días | 2026-03-23 | 2026-03-30 | Servidor MCP habilitado y documentación final. |
+| **H5** | Consola Web FastAPI e Integración Cloud | 5 días | 2026-06-20 | 2026-07-06 | Suite web, Dockerfile, render.yaml y 80 tests pasando. |
+
 
 ---
 
@@ -143,9 +153,10 @@ La duración total del proyecto fue de **4 semanas (30 días)** estructurada en 
 ## 8. Conclusiones
 
 1. Se cumplieron todos los requerimientos funcionales, logrando detectar de manera precisa los **8 patrones de secretos** requeridos por las especificaciones de seguridad.
-2. La arquitectura modular adoptada en la especificación **SAD (FD04)** demostró su valor al permitir un desarrollo paralelo y sin conflictos en el repositorio entre los desarrolladores.
-3. El sistema cuenta con una cobertura de pruebas unitarias superior al **80%**, asegurando la estabilidad del analizador estático ante futuras modificaciones del código fuente.
-4. La integración innovadora con el protocolo **MCP** abre oportunidades clave para automatizar revisiones de seguridad en el ciclo DevSecOps mediante agentes autónomos de Inteligencia Artificial.
+2. La arquitectura modular adoptada en la especificación **SAD (FD04)** demostró su valor al permitir una expansión limpia hacia una aplicación web FastAPI con frontend dinámico en Vanilla JS.
+3. El sistema cuenta con una cobertura de pruebas unitarias superior al **93%**, con **80 pruebas unitarias exitosas** que cubren tanto el motor de análisis como las validaciones web REST.
+4. El empaquetado en contenedores Docker y el uso de Render Blueprints demostraron que es factible desplegar e integrar una consola de ciberseguridad a la nube en segundos y a coste cero.
+
 
 ---
 
@@ -168,8 +179,9 @@ La duración total del proyecto fue de **4 semanas (30 días)** estructurada en 
 
 ## Anexos
 
-* **Anexo 01**: [FD01-Informe-Factibilidad.md](file:///c:/Users/HP/Desktop/asjee/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD01-Informe-Factibilidad.md)
-* **Anexo 02**: [FD02-Informe-Vision.md](file:///c:/Users/HP/Desktop/asjee/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD02-Informe-Vision.md)
-* **Anexo 03**: [FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md](file:///c:/Users/HP/Desktop/asjee/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD-03-ESPECIFICACION-DISE%C3%91O-SISTEMA.md)
-* **Anexo 04**: [FD04-Informe-Arquitectura.md](file:///c:/Users/HP/Desktop/asjee/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD04-Informe-Arquitectura.md)
-* **Anexo 05**: [README.md](file:///c:/Users/HP/Desktop/asjee/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/README.md) y [MCP_SKILL_INTEGRATION.md](file:///c:/Users/HP/Desktop/asjee/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/MCP_SKILL_INTEGRATION.md)
+* **Anexo 01**: [FD01-Informe-Factibilidad.md](file:///c:/Users/kira1/Downloads/wea/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD01-Informe-Factibilidad.md)
+* **Anexo 02**: [FD02-Informe-Vision.md](file:///c:/Users/kira1/Downloads/wea/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD02-Informe-Vision.md)
+* **Anexo 03**: [FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md](file:///c:/Users/kira1/Downloads/wea/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD-03-ESPECIFICACION-DISE%C3%91O-SISTEMA.md)
+* **Anexo 04**: [FD04-Informe-Arquitectura.md](file:///c:/Users/kira1/Downloads/wea/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/docs/FD04-Informe-Arquitectura.md)
+* **Anexo 05**: [README.md](file:///c:/Users/kira1/Downloads/wea/proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/README.md)
+

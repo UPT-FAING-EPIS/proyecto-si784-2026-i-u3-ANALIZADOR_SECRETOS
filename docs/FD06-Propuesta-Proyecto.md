@@ -10,9 +10,10 @@
 
 ## Resumen Ejecutivo
 
-El presente documento detalla la propuesta técnica y económica para la implementación de **SecretScanner**, un analizador estático automatizado de código fuente desarrollado en Python 3.10+ y distribuido como herramienta de interfaz de línea de comandos (CLI) y servidor Model Context Protocol (MCP). El proyecto, diseñado e implementado por Kiara Zapana y Mauricio Choqueña en el marco académico de la Escuela Profesional de Ingeniería de Sistemas de la Universidad Privada de Tacna, aborda el riesgo crítico de seguridad asociado a la fuga de credenciales, claves API y secretos hardcodeados en repositorios de código fuente (vulnerabilidad de tipo **CWE-798**). 
+El presente documento detalla la propuesta técnica y económica para la implementación de **SecretScanner**, una suite integral y automatizada para la detección de secretos, credenciales hardcodeadas y claves de acceso expuestas en código fuente (vulnerabilidad **CWE-798**). Desarrollado originalmente como una herramienta CLI y servidor MCP de consola, se ha expandido para incluir una consola web multipropósito (FastAPI + JS) y contenedores Docker listos para el despliegue automático en la nube a través de Render Blueprints. 
 
-Con una inversión inicial de desarrollo sumamente baja de **S/. 120.00 PEN** (correspondiente a consumos básicos proporcionales de internet y electricidad) y un retorno financiero medido en ahorros operativos proyectados de **S/. 5,402.40 PEN (VAN)** y una relación Beneficio/Costo de **52.00**, **SecretScanner** se presenta como una alternativa sumamente viable, eficiente y robusta frente a herramientas comerciales cerradas. La herramienta ofrece una cobertura de pruebas automatizadas del **80%** y está lista para integrarse de forma local y en flujos DevSecOps de CI/CD para proteger los activos digitales de los equipos de desarrollo.
+Con una inversión inicial de desarrollo de **S/. 120.00 PEN** (correspondiente a consumos básicos de internet y electricidad) y un retorno financiero medido en ahorros operativos proyectados de **S/. 5,402.40 PEN (VAN)** y una relación Beneficio/Costo de **52.00**, **SecretScanner** ofrece una suite completa de ciberseguridad preventiva. El proyecto cuenta con **80 pruebas unitarias automatizadas** con una cobertura de código superior al **93%**, garantizando la máxima confiabilidad técnica tanto en entornos de desarrollo local como en flujos automatizados de CI/CD.
+
 
 ---
 
@@ -25,7 +26,8 @@ En el desarrollo de software actual, el uso constante de APIs, bases de datos y 
 **SecretScanner** aborda este problema de manera preventiva (*Shift-Left Security*), impidiendo la exposición del secreto antes de que este abandone el entorno local del desarrollador o bloqueando automáticamente las integraciones continuas. Adicionalmente, el proyecto destaca por operar con **cero dependencias complejas** (eliminando riesgos de cadena de suministro) y funcionar localmente (preservando la confidencialidad absoluta del código fuente del usuario, el cual nunca es transmitido a la nube).
 
 ## 3. Objetivo General
-Desarrollar una herramienta de análisis estático de código fuente que detecte secretos y credenciales hardcodeadas en proyectos de software mediante expresiones regulares, con capacidad de reporte en múltiples formatos (consola, JSON, CSV) y distribución como interfaz de línea de comandos (CLI), logrando una cobertura de pruebas mínima del 80%.
+Desarrollar una suite integral de análisis estático de código fuente que detecte secretos y credenciales hardcodeadas mediante expresiones regulares, con capacidad de presentación multiplataforma (CLI, extensión de VSCode, MCP y aplicación web) y despliegue automatizado en contenedores en la nube, logrando una cobertura de pruebas mínima del 90%.
+
 
 ## 4. Beneficios
 * **Ahorro de Tiempo de Auditoría**: Automatiza en segundos un escaneo recursivo que a un ingeniero de seguridad le tomaría horas de revisión manual.
@@ -34,17 +36,22 @@ Desarrollar una herramienta de análisis estático de código fuente que detecte
 * **Enmascaramiento Nativo**: Garantiza la seguridad de los reportes generados reemplazando los caracteres centrales de las claves detectadas por asteriscos (`***`).
 
 ## 5. Alcance
-* Escaneo de directorios de forma recursiva ignorando carpetas de dependencias (`node_modules/`, `.venv/`) y control de versiones (`.git/`).
-* Detección de 8 tipos principales de secretos de alta y mediana severidad.
-* Exportación estructurada de resultados a `output/report.json` y `output/report.csv`.
-* Exposición de interfaz de herramientas para agentes inteligentes mediante el protocolo MCP.
+* Escaneo recursivo local omitiendo carpetas del control de versiones y entornos de desarrollo.
+* Detección de 8 patrones principales de secretos y credenciales de alta y mediana severidad.
+* Exportación estructurada a JSON y CSV.
+* Servidor MCP integrado para comunicación JSON-RPC con agentes inteligentes de IA.
+* Consola web multipropósito (FastAPI + Vanilla JS glassmorphism UI) con herramientas avanzadas: escáner remoto de repositorios de GitHub, cargador de archivos ZIP, cálculo de entropía de Shannon, generador criptográfico seguro de claves, laboratorio regex interactivo y guías de remediación dinámica.
+* Containerización Docker y automatización de despliegue PaaS mediante Render Blueprints.
+
 
 ## 6. Requerimientos del Sistema
 El sistema requiere para su ejecución:
-* Intérprete Python 3.10 o superior instalado en la máquina anfitriona.
-* Librería de salida visual `colorama` (para consolas Windows y UNIX).
-* SDK de MCP `mcp` (únicamente si se ejecuta el servidor de IA).
-* Framework de pruebas `pytest` y `pytest-cov` (solo para entornos de desarrollo y QA).
+* Intérprete Python 3.10 o superior instalado en el host de ejecución.
+* Framework web FastAPI y servidor web Uvicorn (con dependencias como `python-multipart`).
+* Librería de salida visual `colorama` (CLI local).
+* Engine de contenedores Docker (despliegue en contenedor y Docker Compose).
+* Cuenta de hosting en la nube de Render (para despliegue automatizado del Blueprint).
+
 
 ## 7. Restricciones
 * **Análisis No Semántico**: El motor se basa en patrones Regex compilados; no realiza interpretaciones semánticas avanzadas, por lo que nombres de variables coincidentes con las expresiones de búsqueda (como `password = "test"`) serán detectados.
@@ -57,9 +64,10 @@ El sistema requiere para su ejecución:
 * El entorno de CI/CD posee soporte para ejecución de procesos Python básicos.
 
 ## 9. Resultados Esperados
-* Detección y reporte exitoso de tokens válidos en un dataset de prueba.
-* Retorno de código de estado `1` ante hallazgos de secretos para fallar de forma exitosa los pipelines de CI/CD.
-* Cobertura de pruebas superior al 80% en los módulos core (`file_scanner`, `patterns`, `reporter`).
+* Detección y reporte exitoso de secretos válidos en el repositorio de test.
+* Integración limpia de la suite de ciberseguridad a entornos locales y cloud.
+* Cobertura de pruebas superior al 93% con un suite automatizada de 80 tests unitarios y de integración.
+
 
 ## 10. Metodología de Implementación
 El proyecto se implementa empleando prácticas ágiles de desarrollo de software con ciclos de realimentación cortos:
@@ -70,16 +78,8 @@ El proyecto se implementa empleando prácticas ágiles de desarrollo de software
 
 ## 11. Actores Claves
 
-```mermaid
-graph TD
-    docente["Patrick Cuadros (Docente Evaluador)"]
-    dev_lead["Kiara Zapana (Lead Dev / Security Analyst)"]
-    devops_lead["Mauricio Choqueña (DevOps / QA Lead)"]
+![Diagrama de Actores](./media/actores.png)
 
-    docente -->|Audita y Califica| dev_lead
-    docente -->|Audita y Califica| devops_lead
-    dev_lead <-->|Co-diseño y Testing| devops_lead
-```
 
 * **Mg. Patrick Cuadros Quiroga**: Evaluador académico y responsable de la dirección del curso de Calidad y Pruebas de Software.
 * **Kiara Holly Zapana Murillo**: Desarrolladora principal, encargada del diseño de la lógica del escáner y la definición de patrones regex de secretos.
@@ -103,21 +103,24 @@ El monitoreo del avance del proyecto se ejecuta mediante:
 * **Pruebas de Integración Continua**: Ejecución automatizada de la suite de pruebas en la infraestructura de GitHub Actions ante cada *pull request* en la rama `main`.
 
 ## 14. Cronograma del Proyecto
-El proyecto se completó en un período de 4 semanas según el siguiente desglose:
+El proyecto se completó en un período de 5 semanas según el siguiente desglose:
 
 ```
-Semanas:      [Semana 1]      [Semana 2]      [Semana 3]      [Semana 4]
+Semanas:      [Semana 1]      [Semana 2]      [Semana 3]      [Semana 4]      [Semana 5]
 Fase 1:   ===========(Configuración)
 Fase 2:               ===============(Desarrollo Core)
 Fase 3:                               ===========(Pruebas y QA)
 Fase 4:                                           ===========(Integración y MCP)
+Fase 5:                                                       =================(Web & Cloud)
 ```
 
 ## 15. Hitos de Entregables
 * **Hito 1 (Día 5)**: Configuración e inicialización del monorepo y entorno de pruebas básico.
 * **Hito 2 (Día 14)**: Motor core del analizador estático completado e interfaz CLI funcional.
-* **Hito 3 (Día 22)**: Suite de tests con pytest finalizada alcanzando el 80% de cobertura y reportes JSON/CSV estables.
+* **Hito 3 (Día 22)**: Suite de tests finalizada alcanzando el 80% de cobertura y reportes JSON/CSV estables.
 * **Hito 4 (Día 30)**: Integración de servidor MCP completada y documentación de cierre generada.
+* **Hito 5 (Día 35)**: Suite web FastAPI, containerización Docker, render.yaml y 80 tests pasando.
+
 
 ---
 
@@ -150,11 +153,14 @@ A continuación se listan los requerimientos técnicos y funcionales detallados 
 
 ```
 [CLI CLIENT] <---> [CORE SCANNER] <---> [REGEX PATTERNS]
-                        |
-                        +---> [REPORTER] (JSON / CSV)
-                        |
+                         |
+[WEB CLIENT] <---> [WEB APP (FASTAPI)]
+                         |
+                         +---> [REPORTER] (JSON / CSV)
+                         |
 [AGENT CLIENT] <--> [MCP SERVER]
 ```
+
 
 ### 1. Requerimientos del Motor de Escaneo
 * El sistema debe realizar un escaneo en profundidad (recursivo) de la ruta de entrada provista.

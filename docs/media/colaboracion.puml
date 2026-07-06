@@ -1,0 +1,24 @@
+@startuml colaboracion
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam node {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+node "main.py" as Main
+node "file_scanner.py" as Scanner
+node "patterns.py" as Patterns
+node "reporter.py" as Reporter
+node "web/app.py" as WebApp
+
+Main --> "1: Llama a scan_path()" Scanner
+Scanner --> "2: Compara con patrones en" Patterns
+Main --> "3: Llama a export_json()/export_csv()" Reporter
+WebApp --> "1: Llama a scan_path()" Scanner
+WebApp --> "2: Llama a export_json()/export_csv()" Reporter
+@enduml

@@ -1,0 +1,55 @@
+@startuml base_datos
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam class {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+    HeaderBackgroundColor #1f2937
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+entity PROYECTO {
+    * id : int [PK]
+    --
+    nombre : string
+    ruta_local : string
+    fecha_creacion : datetime
+}
+
+entity ESCANEADO {
+    * id : int [PK]
+    --
+    * proyecto_id : int [FK]
+    fecha_ejecucion : datetime
+    total_archivos : int
+    total_hallazgos : int
+    exit_code : string
+}
+
+entity HALLAZGO {
+    * id : int [PK]
+    --
+    * escaneado_id : int [FK]
+    tipo_secreto : string
+    severidad : string
+    ruta_archivo : string
+    numero_linea : int
+    contenido_enmascarado : string
+}
+
+entity PATRON_DETECCION {
+    * id : int [PK]
+    --
+    nombre_patron : string
+    expresion_regular : string
+    severidad_defecto : string
+    activo : boolean
+}
+
+PROYECTO ||--o{ ESCANEADO : "registra"
+ESCANEADO ||--o{ HALLAZGO : "contiene"
+HALLAZGO }o--|| PATRON_DETECCION : "clasificado por"
+@enduml

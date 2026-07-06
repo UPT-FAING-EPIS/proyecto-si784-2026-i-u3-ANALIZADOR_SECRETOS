@@ -1,0 +1,20 @@
+@startuml actores
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam actor {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+actor "Patrick Cuadros\n(Docente Evaluador)" as docente
+actor "Kiara Zapana\n(Lead Dev / Security Analyst)" as dev_lead
+actor "Mauricio Choqueña\n(DevOps / QA Lead)" as devops_lead
+
+docente --> "Audita y Califica" dev_lead
+docente --> "Audita y Califica" devops_lead
+dev_lead <--> "Co-diseño y Testing" devops_lead
+@enduml

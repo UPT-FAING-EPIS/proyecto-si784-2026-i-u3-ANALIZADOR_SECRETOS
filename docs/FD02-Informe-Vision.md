@@ -6,11 +6,12 @@
 
 **UNIVERSIDAD PRIVADA DE TACNA**
 
-# Sistema de Análisis y Detección de Secretos
+# Analizador de Secretos — SecretScanner
 
 ## Documento de Visión
 
-**Versión 2.0**
+**Versión 2.0 (Actualizada)**
+
 
 ---
 
@@ -86,61 +87,44 @@
 
 En la era moderna de desarrollo de software, la seguridad de credenciales y secretos representa uno de los mayores riesgos de seguridad para las organizaciones. Con la proliferación de tokens de acceso, claves API, contraseñas y certificados digitales, las corporaciones enfrentan el desafío crítico de evitar que información altamente sensible sea accidentalmente expuesta en repositorios de código, bases de datos de desarrollo o sistemas de control de versiones.
 
-El problema central radica en el ciclo de vida de desarrollo (SDLC - Software Development Life Cycle). Desarrolladores, testers y analistas de datos requieren trabajar con datos realistas que contengan información sensible para identificar vulnerabilidades y realizar pruebas exhaustivas. Sin embargo, clonar esta información directamente a entornos no productivos crea una superficie de ataque masiva, exponiendo secretos corporativos a personal no autorizado y violando normativas de seguridad como OWASP, ISO 27001 y CWE (Common Weakness Enumeration).
+El problema central radica en el ciclo de vida de desarrollo (SDLC - Software Development Life Cycle). Desarrolladores, testers y analistas de datos requieren trabajar con datos realistas que contengan información sensible para identificar vulnerabilidades y realizar pruebas exhaustivas. Sin embargo, clonar esta información directamente a entornos no productivos crea una superficie de ataque masiva, exponiendo secretos corporativos a personal no autorizado y violando normativas de seguridad como OWASP, ISO **SecretScanner** surge como una solución integral de detección, análisis y reporteo de información sensible. Integra técnicas avanzadas de reconnaissance (escaneo de patrones), análisis de contenido y correlación de datos, permitiendo a las organizaciones:
 
-**Secretos Analyzer** surge como una solución integral de detección, análisis y reporteo de información sensible. No es simplemente un escáner; es una plataforma de orquestación de seguridad diseñada para arquitecturas modernas. Integra técnicas avanzadas de reconnaissance (escaneo de patrones), análisis de contenido y correlación de datos, permitiendo a las organizaciones:
-
-- Identificar automáticamente secretos en bases de datos, archivos de configuración y repositorios
-- Analizar patrones y ubicaciones donde se filtran datos sensibles
-- Generar reportes de cumplimiento normativo
-- Implementar políticas de remediación automatizadas
-- Mantener auditorías exhaustivas de exposiciones de secretos
+- Identificar automáticamente secretos en directorios locales, repositorios de GitHub (clonación en memoria) y archivos ZIP subidos.
+- Evaluar la entropía de Shannon en contraseñas y claves para prevenir secretos de baja complejidad.
+- Probar expresiones de detección en tiempo real (Regex Sandbox) y generar claves criptográficas seguras.
+- Facilitar guías dinámicas de remediación para lenguajes populares (Python, Node, Go, Java).
+- Mantener reportes en consola, JSON y CSV.
 
 ### 1.1 Propósito
 
-El propósito principal de este informe es presentar el diseño, la fundamentación técnica y la estrategia de implementación de **Secretos Analyzer**, una plataforma avanzada de Detección y Análisis de Secretos (Secret Detection and Analysis - SDA). El sistema está diseñado para proteger assets críticos de información sensible utilizando técnicas de escaneo inteligente y machine learning, garantizando que la seguridad sea un componente intrínseco del ciclo de vida del software (*Security by Design*).
+El propósito principal de este informe es presentar el diseño, la fundamentación técnica y la estrategia de implementación de **SecretScanner**, una plataforma avanzada de Detección y Análisis de Secretos (Secret Detection and Analysis - SDA). El sistema está diseñado para proteger assets críticos de información sensible utilizando técnicas de escaneo inteligente, garantizando que la seguridad sea un componente intrínseco del ciclo de vida del software (*Security by Design*).
 
 Los objetivos específicos que este proyecto busca cumplir son:
 
-- **Detección Inteligente de Secretos**: Proveer una metodología automatizada para identificar información sensible (claves API, tokens, contraseñas, certificados) en múltiples fuentes de datos utilizando patrones avanzados y expresiones regulares determinísticas.
-
-- **Análisis Contextual Profundo**: Establecer un mecanismo técnico que permita el análisis simultáneo en repositorios Git, bases de datos SQL/NoSQL, archivos de configuración y sistemas de almacenamiento en la nube, asegurando que se detecten exposiciones tanto obvias como latentes.
-
-- **Garantizar Visibilidad de Riesgos**: Implementar un motor de correlación que permita identificar relaciones entre secretos expuestos, usuarios que accedieron, ubicaciones de exposición y líneas de tiempo de cada incidente.
-
-- **Cumplimiento Normativo Automatizado**: Facilitar a las organizaciones el cumplimiento de estándares de seguridad internacionales (como OWASP Top 10, CWE, ISO 27001) mediante la generación de auditorías y reportes sobre exposiciones de datos.
-
-- **Remediación Facilitada**: Integrar el proceso de corrección como un paso automatizado, generando automáticamente alertas, notificaciones y planes de acción para cada secreto descubierto.
+- **Detección Inteligente de Secretos**: Proveer una metodología automatizada para identificar información sensible en múltiples formatos utilizando patrones avanzados y expresiones regulares determinísticas.
+- **Análisis Multi-Fuente**: Establecer un mecanismo técnico que permita el análisis simultáneo de directorios locales, URLs de GitHub y archivos ZIP cargados por la web.
+- **Garantizar Visibilidad de Riesgos**: Implementar un motor que permita identificar relaciones entre secretos expuestos, archivos, líneas afectadas y niveles de severidad.
+- **Remediación Facilitada**: Integrar el proceso de corrección como un paso guiado en la interfaz, mostrando plantillas interactivas de remediación.
 
 ### 1.2 Alcance
 
-El proyecto **Secretos Analyzer** se define como una plataforma de software para la detección, análisis y remediación de información sensible en arquitecturas distribuidas. El alcance detallado incluye:
+El proyecto **SecretScanner** se define como una suite de software para la detección, análisis y remediación de información sensible. El alcance detallado incluye:
 
-- **Conectividad Multimotor**: Soporte nativo para escaneo en repositorios Git (GitHub, GitLab, Gitea), bases de datos SQL (PostgreSQL) y NoSQL (MongoDB), así como sistemas de archivos locales.
-
-- **Reconocimiento de Patrones de Secretos**: Detectar patrones conocidos de:
-  - Claves de acceso y tokens (AWS Keys, Bearer Tokens, API Keys)
-  - Credenciales de bases de datos (conexiones SQL)
-  - Certificados y claves privadas (RSA, SSL/TLS)
-  - Contraseñas y credenciales hardcodeadas
-  - URLs con credenciales embebidas
-  - Información sensible de usuario (PII patterns)
-
-- **Motor de Análisis**: Implementación de correlación de datos para identificar:
-  - Ubicación exacta donde se expuso el secreto
-  - Timestamp de la exposición
-  - Usuarios que ejecutaron cambios
-  - Historial de commits relacionados
-
-- **Interfaz de Gestión (Frontend)**: Un panel de control basado en React para la visualización de alertas, análisis de incidentes y generación de reportes.
-
-- **Motor de Orquestación (Backend)**: Una API en FastAPI encargada de coordinar escaneos, ejecutar análisis y generar reportes de manera asíncrona.
-
-- **Motor de Reporteo**: Generación de reportes técnicos, auditorías de cumplimiento y dashboards ejecutivos.
+- **Conectividad Multi-Fuente**: Soporte nativo para escaneo en directorios locales (CLI), clonado seguro en memoria de repositorios Git (GitHub) y procesamiento de archivos comprimidos subidos (.zip).
+- **Reconocimiento de Patrones de Secretos**: Detectar 8 tipos de secretos conocidos:
+  - Tokens de acceso (GitHub Tokens, AWS Access Keys, Bearer/API Keys genéricas)
+  - Credenciales de autenticación (Tokens JWT, Tokens de Slack)
+  - Certificados y claves privadas (RSA PEM)
+  - Contraseñas hardcodeadas en asignaciones de variables
+  - URLs con credenciales embebidas (ej. `http://user:pass@host`)
+- **Interfaz de Gestión (Frontend)**: Un panel de control de página única (SPA) basado en HTML5, CSS3 (Vanilla) y Vanilla JS, con diseño oscuro y translúcido (*glassmorphic*) que gestiona de manera reactiva todos los flujos de análisis.
+- **Servidor API (Backend)**: Una API REST asíncrona en FastAPI y Uvicorn encargada de procesar escaneos, calcular entropías, validar patrones personalizados y generar claves criptográficas seguras.
+- **Motor de Reporteo**: Generación de reportes locales CSV y JSON en la carpeta `output/`.
 
 **Fuera del Alcance:**
-
-- Eliminación o redacción automática de secretos en repositorios (solo detección y reporte)
+- Modificación directa o sobreescritura de secretos en los archivos fuente originales (remediación guiada y manual por el desarrollador).
+- Monitoreo activo de redes en tiempo real.
+- Cifrado o crackeo de hashes.
 - Monitoreo de redes en tiempo real
 - Análisis forense de datos borrados
 - Crackeado o reversión de hashes criptográficos
@@ -322,49 +306,27 @@ La estructura de costos para la organización se divide en:
 
 ## 5. Características del Producto
 
-### 5.1 Motor de Detección Multimotor
+### 5.1 Motor de Detección Híbrido
 
-El núcleo de **Secretos Analyzer** permite escanear múltiples fuentes simultáneamente:
+El núcleo de **SecretScanner** permite escanear código desde tres modalidades distintas en su interfaz unificada:
+- **Escaneo de Directorio Local**: Auditoría inmediata de carpetas del disco local (CLI/Web).
+- **Clonado en Memoria (GitHub)**: Descarga asíncrona de repositorios Git a través de archivos ZIP temporales del código fuente para auditoría remota.
+- **Subida de Archivos ZIP**: Carga y descompresión temporal en servidor para auditar proyectos empaquetados.
 
-- **Escaneo de Git**:
-  - Análisis histórico completo de commits
-  - Detección en branches principales y feature branches
-  - Identificación de secretos eliminados (aún presentes en historial)
+### 5.2 Utilidades de Auditoría y Robustez
 
-- **Escaneo de Bases de Datos**:
-  - SQL (PostgreSQL): Búsqueda en tablas de configuración, variables de entorno almacenadas
-  - NoSQL (MongoDB): Análisis de documentos para patrones de secretos
+- **Analizador de Entropía de Shannon**: Mide el grado de desorden de caracteres de claves y strings sensibles, calculando el tiempo aproximado para ataques de fuerza bruta.
+- **Generador de Claves Criptográficas**: Generador basado en módulo seguro `secrets` de Python para construir claves API, SSH o contraseñas aleatorias configurables en longitud y juego de caracteres.
+- **Laboratorio de Patrones Regex**: Permite prototipar reglas de detección escribiendo expresiones regulares y evaluándolas dinámicamente con strings de prueba.
+- **Guía de Remediación Integrada**: Manual dinámico con plantillas interactivas que explican cómo pasar variables hardcodeadas a variables de entorno en lenguajes populares.
 
-- **Escaneo de Sistemas de Archivos**:
-  - Archivos de configuración (.env, .properties, .yaml)
-  - Archivos de aplicación (código fuente, scripts)
+### 5.3 Dashboard de Control de Seguridad
 
-### 5.2 Catálogo de Patrones de Detección
+Interfaz en HTML5 y CSS3 (Vanilla) con diseño oscuro y translúcido (*glassmorphic*) que permite:
+- **Resumen en tiempo real**: Tarjetas de estadísticas que muestran cantidad de análisis ejecutados, total de archivos procesados y hallazgos críticos detectados.
+- **Tabla de Hallazgos interactiva**: Detalle de hallazgos por nivel de severidad (HIGH, MEDIUM, LOW), tipo de regla rota, archivo afectado con su número de línea y fragmento enmascarado del secreto.
+- **Detección Dinámica de Entorno**: Ocultación automática de la pestaña local al ejecutarse en la nube para garantizar la consistencia técnica de la aplicación.
 
-**Secretos Analyzer** implementa biblioteca de patrones preconfigurados:
-
-1. **AWS Credentials**: Detección de access keys y secret keys de AWS
-2. **API Keys**: Identificación de keys de servicios populares (Stripe, SendGrid, etc.)
-3. **Tokens de Autenticación**: Bearer tokens, JWT, OAuth tokens
-4. **Credenciales de BD**: Strings de conexión con usuario/contraseña
-5. **Certificados Privados**: Claves RSA, SSL/TLS privadas
-6. **Contraseñas Hardcodeadas**: Patrones comunes de contraseñas
-7. **PII Patterns**: Números de tarjeta de crédito, SSN, números de identificación
-
-### 5.3 Panel de Control (UI)
-
-Interfaz en React que permite:
-
-- **Explorador de Incidentes**: Vista centralizada de todos los secretos detectados
-- **Detalle de Exposición**: Información completa: ubicación, tipo, severidad, historial
-- **Análisis de Tendencias**: Gráficos de frecuencia de exposiciones por tipo, ubicación, tiempo
-- **Gestión de Alertas**: Configuración de umbrales y canales de notificación
-
-### 5.4 Auditoría y Reportes
-
-- **Logs de Ejecución**: Registro detallado de cada escaneo, resultados y acciones
-- **Reportes de Cumplimiento**: Certificación de que se ejecutaron escaneos de seguridad
-- **Reportes Ejecutivos**: Resumen de posture de seguridad para stakeholders
 
 ---
 

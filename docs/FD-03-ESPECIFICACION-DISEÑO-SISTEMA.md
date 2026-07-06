@@ -340,6 +340,14 @@ Existe la necesidad imperativa de una herramienta automatizada que:
 | RF-013 | Reporte JSON | `reporter.py` | Serializa lista de findings con indent=2 |
 | RF-014 | Reporte CSV | `reporter.py` | Escribe: type, severity, file, line, content |
 | RF-015 | Severidad | `file_scanner.py` | Clasifica: HIGH, MEDIUM, LOW |
+| RF-016 | Escaneo remoto de GitHub | `web/app.py` | Descarga zipball de GitHub, audita recursivamente en memoria y borra archivos temporales |
+| RF-017 | Escaneo de subida ZIP | `web/app.py` | Acepta archivos ZIP multipart, los descomprime en directorio temporal y limpia tras finalizar |
+| RF-018 | Medidor de Entropía | `web/app.py` | Calcula la entropía de Shannon del string y estima tiempo de crackeo por fuerza bruta |
+| RF-019 | Generador Seguro | `web/app.py` | Genera contraseñas criptográficas con longitud y caracteres personalizados mediante módulo `secrets` |
+| RF-020 | Sandbox de Expresiones | `web/app.py` | Prototipa regex personalizadas indicando coincidencias y número de línea de ocurrencia |
+| RF-021 | Guía de Remediación | `web/static/` | Ofrece instrucciones interactivas dinámicas para pasar secretos a variables de entorno |
+| RF-022 | Interfaz Adaptativa | `web/static/` | Oculta dinámicamente la pestaña de escaneo local en entornos cloud (como Render) |
+
 
 ### d) Reglas de Negocio
 
@@ -1079,41 +1087,66 @@ Funciones Privadas:
 
 ---
 
-## Estructura de Directorios Implementada
+### **Módulo 5: web/app.py (FastAPI Server)**
 
 ```
-proyecto-si784-2026-i-u1-analizador-de-secretos/
-│
-├── main.py                         # Entry point CLI
-├── requirements.txt                # Dependencias (colorama)
-├── requirements-dev.txt            # Dependencias dev (pytest, coverage)
-├── README.md                       # Documentación usuario
-│
-├── scanner/                        # Paquete principal
-│   ├── __init__.py                # Existe pero vacío
-│   ├── patterns.py                # Patrones regex compilados
-│   ├── file_scanner.py            # Lógica escaneo recursivo
-│   └── reporter.py                # Exportadores JSON/CSV
-│
-├── tests/                         # Suite de tests
-│   ├── __init__.py
-│   ├── test_patterns.py           # Tests de patrones
-│   ├── test_file_scanner.py       # Tests de scanning
-│   └── test_reporter.py           # Tests de reportes
-│
-├── .github/
-│   └── workflows/
-│       └── ci.yml                 # Pipeline GitHub Actions
-│
-├── output/                        # Directorio de reportes (generado)
-│   ├── report.json               # Reporte JSON (opcional)
-│   └── report.csv                # Reporte CSV (opcional)
-│
-└── docs/                         # Documentación
-    ├── FD01-Informe-Factibilidad.md
-    ├── FD02-Informe-Vision.md
-    └── FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md (este archivo)
+Responsabilidad: Exponer el scanner y herramientas de seguridad como una REST API asíncrona
+Dependencias: fastapi, uvicorn, python-multipart, pydantic, re, tempfile, shutil, urllib
+Endpoints Expuestos:
+  - POST /api/scan           : Analiza un directorio del disco local (si corre en entorno local)
+  - POST /api/scan-git       : Recibe URL de GitHub, descarga zipball, extrae, audita y limpia
+  - POST /api/scan-upload    : Recibe archivo ZIP mediante multipart/form-data, lo audita y limpia
+  - POST /api/scan-code      : Analiza un texto de código plano pegado
+  - POST /api/check-entropy  : Calcula métricas de entropía de Shannon de un texto
+  - POST /api/generate-secret: Genera una clave criptográficamente segura
+  - POST /api/check-custom-pattern: Prueba coincidencia de expresiones regulares personalizadas
 ```
+
+---
+
+
+```
+proyecto-si784-2026-i-u3-ANALIZADOR_SECRETOS/
+│
+├── run_web.py                      # Lanzador local del servidor web
+├── Dockerfile                      # Archivo de contenedorización Docker
+├── docker-compose.yml              # Orquestación de contenedores local
+├── render.yaml                     # Blueprint de Render (Infraestructura como código)
+├── requirements.txt                # Dependencias (fastapi, python-multipart, uvicorn, colorama)
+├── README.md                       # Manual de usuario principal
+│
+├── src/secret_scanner/             # Código fuente del sistema
+│   ├── main.py                     # Entry point CLI
+│   ├── mcp_server.py               # Servidor FastMCP para IA
+│   ├── scanner/                    # Paquete lógico del motor
+│   │   ├── __init__.py
+│   │   ├── patterns.py             # Patrones regex compilados
+│   │   ├── file_scanner.py         # Motor de escaneo recursivo
+│   │   └── reporter.py             # Exportadores JSON/CSV
+│   └── web/                        # Servidor Web FastAPI
+│       ├── app.py                  # Rutas REST del backend
+│       └── static/                 # UI Frontend SPA
+│           ├── index.html          # Panel Dashboard en Glassmorphism
+│           ├── styles.css          # Estilos CSS oscuros y translúcidos
+│           └── app.js              # Enrutador reactivo y utilidades
+│
+├── tests/                          # Suite de pruebas unitarias
+│   ├── __init__.py
+│   ├── test_file_scanner.py
+│   ├── test_patterns.py
+│   ├── test_reporter.py
+│   └── test_web_api.py             # Pruebas de validación de endpoints y utilidades
+│
+├── docs/                           # Documentación de diseño
+│   ├── media/                      # Archivos de diagramas (.puml y .png)
+│   ├── FD01-Informe-Factibilidad.md
+│   ├── FD02-Informe-Vision.md
+│   ├── FD-03-ESPECIFICACION-DISEÑO-SISTEMA.md (este archivo)
+│   ├── FD04-Informe-Arquitectura.md
+│   ├── FD05-Informe-Proyecto-Final.md
+│   └── FD06-Propuesta-Proyecto.md
+```
+
 
 ---
 

@@ -68,83 +68,32 @@ Versión *1.0*
 
 **Analizador de Secretos — SecretScanner**
 
-### 1.2. Duración del proyecto
+### 1.2El proyecto tiene una duración de **4 semanas (≈30 días)** para su fase inicial (núcleo CLI), seguido de un ciclo de expansión de **1 semana** para la integración de la suite web multipropósito, containerización y despliegue automatizado en la nube (PaaS).
 
-El proyecto tiene una duración estimada de **4 semanas (≈30 días)**, distribuidas
-en cuatro fases: configuración del entorno, desarrollo del núcleo funcional,
-pruebas y aseguramiento de calidad, e integración final con métricas y entrega.
-
-| Fase | Días | Issues |
-|------|------|--------|
-| Fase 1 — Configuración del proyecto | Días 1–5 | #1, #2, #3, #4 |
-| Fase 2 — Desarrollo del núcleo del analizador | Días 6–14 | #5, #6, #7, #8 |
-| Fase 3 — Pruebas y aseguramiento de calidad | Días 15–22 | #9, #10, #11, #12 |
-| Fase 4 — Integración final, métricas y entrega | Días 23–30 | #13, #14, #15 |
+| Fase | Días | Actividades y Módulos |
+|------|------|-----------------------|
+| Fase 1 — Configuración del proyecto | Días 1–5 | Inicialización del monorepo y definición de patrones base. |
+| Fase 2 — Núcleo CLI y Servidor MCP | Días 6–14 | Desarrollo de `file_scanner.py`, `patterns.py` y servidor FastMCP. |
+| Fase 3 — Pruebas y Aseguramiento de Calidad | Días 15–22 | Configuración de GitHub Actions y suite de tests locales de alta cobertura. |
+| Fase 4 — Consola Web FastAPI e Integración Cloud | Días 23–35 | Desarrollo del backend FastAPI, UI con glassmorphism, Dockerfile y Render Blueprint. |
 
 ### 1.3. Descripción
 
-SecretScanner es una herramienta de código abierto desarrollada en **Python 3.10+**,
-organizada como un **monorepo**, cuyo propósito es detectar automáticamente
-secretos y credenciales sensibles hardcodeadas en repositorios de código fuente.
-La herramienta analiza archivos de texto en directorios usando expresiones regulares
-(regex) para identificar patrones de secretos conocidos: GitHub Tokens, AWS Access
-Keys, Claves API genéricas, Contraseñas hardcodeadas, JWT Tokens, Tokens de Slack,
-Claves Privadas RSA y URLs con credenciales embebidas.
-
-La importancia del proyecto radica en que la exposición accidental de secretos en
-repositorios de código es una de las principales causas de brechas de seguridad en
-organizaciones de software. Según estudios del sector, miles de secretos son
-expuestos públicamente en GitHub cada día. SecretScanner cubre una necesidad real
-en el flujo de trabajo del desarrollador al proveer una herramienta local, gratuita
-y extensible que analiza el código antes de que llegue a un repositorio remoto,
-generando reportes en consola, JSON y CSV.
-
-El proyecto se desarrolla como trabajo de la asignatura **Calidad y Pruebas de
-Software** en la Escuela Profesional de Ingeniería de Sistemas de la Universidad
-Privada de Tacna.
+SecretScanner es una herramienta de código abierto organizada como un **monorepo**, cuyo propósito es detectar y prevenir la fuga de secretos y credenciales en repositorios de código fuente. Originalmente diseñado como una herramienta CLI y servidor MCP de consola, se ha expandido para incluir una **consola web multipropósito** interactiva. Esta consola cuenta con un medidor de entropía de Shannon, generador criptográfico de claves, caja de pruebas regex y guías de remediación dinámica. Todo el sistema está dockerizado y listo para ser desplegado en Render mediante infraestructura declarativa.
 
 ### 1.4. Objetivos
 
 #### 1.4.1. Objetivo general
 
-Desarrollar una herramienta de análisis estático de código fuente que detecte
-secretos y credenciales hardcodeadas en proyectos de software mediante expresiones
-regulares, con capacidad de reporte en múltiples formatos (consola, JSON, CSV) y
-distribución como interfaz de línea de comandos (CLI), logrando una cobertura de
-pruebas mínima del 80%.
+Desarrollar una suite integral de análisis estático de código fuente que detecte credenciales hardcodeadas mediante expresiones regulares, ofreciendo interfaces flexibles (CLI, extensión de VSCode, MCP y aplicación web) con soporte nativo para despliegue automatizado en contenedores en la nube, garantizando una cobertura de pruebas superior al 90% en sus módulos centrales.
 
 #### 1.4.2. Objetivos específicos
 
-1. **Implementar un módulo de patrones regex (`patterns.py`)** que contenga al
-menos 8 tipos de secretos documentados (GitHub Token, AWS Access Key, API Key
-genérica, contraseña hardcodeada, JWT Token, Slack Token, clave privada RSA y URL
-con credenciales), con el fin de cubrir los tipos de secretos más frecuentes en
-repositorios públicos.
-
-2. **Desarrollar un módulo de escaneo de archivos (`file_scanner.py`)** que recorra
-directorios de forma recursiva con `os.walk()`, aplique los patrones regex sobre
-cada archivo de texto, retorne hallazgos estructurados con campos `file`,
-`line_number`, `secret_type` y `content`, e ignore extensiones y directorios no
-relevantes (`.png`, `.jpg`, `.git/`, `__pycache__/`).
-
-3. **Construir un módulo de reportes (`reporter.py`)** que presente los hallazgos
-en consola con colores (colorama) diferenciando hallazgos críticos de advertencias,
-y que exporte los resultados a archivos `.json` y `.csv` en la carpeta `output/`,
-para facilitar la trazabilidad y el análisis posterior.
-
-4. **Implementar una interfaz de línea de comandos (`main.py`)** basada en
-`argparse` con los argumentos `--path`, `--output` y `--verbose`, de modo que
-cualquier usuario pueda ejecutar la herramienta sobre un directorio o archivo con
-un único comando desde la terminal.
-
-5. **Crear un conjunto de archivos de muestra (`tests/sample_files/`)** con
-secretos falsos y no funcionales, y escribir pruebas unitarias y de integración con
-`pytest` y `pytest-cov`, alcanzando una cobertura mínima del 80% en todos los
-módulos del paquete `scanner/`.
-
-6. **Calcular y documentar métricas de calidad del analizador** (Precisión, Recall,
-Verdaderos Positivos, Falsos Positivos y Falsos Negativos) sobre el dataset de
-prueba, registrando los resultados en un archivo `METRICS.md` para evidenciar la
+1. **Robustecer el Motor de Escaneo**: Soportar análisis de directorios locales, repositorios de GitHub mediante clonación remota en memoria y carga de archivos comprimidos ZIP en la web.
+2. **Implementar Utilidades Web**: Crear un calculador visual de entropía de Shannon, un generador seguro de claves criptográficas y un laboratorio interactivo de prototipado regex.
+3. **Optimizar el Despliegue**: Proveer soporte Docker y un Blueprint de Render (`render.yaml`) para facilitar la puesta en producción de un servidor remoto en la nube.
+4. **Garantizar la Calidad**: Mantener una suite de al menos 80 pruebas unitarias con un porcentaje de cobertura de código verificado por encima del 90%.
+trando los resultados en un archivo `METRICS.md` para evidenciar la
 efectividad de la herramienta.
 
 ---
@@ -219,29 +168,42 @@ cualquier directorio de proyecto.
 | GitHub (repositorio) | — | Gestión del proyecto, PRs y CI/CD | Gratuito (plan público) |
 | VS Code / PyCharm CE | Última | IDE de desarrollo | MIT / Apache 2.0 |
 
-**Estructura del monorepo:**
+**Estructura del monorepo actual:**
 
 ```
-
 secret-scanner/
-├── scanner/
-│   ├── __init__.py
-│   ├── patterns.py         \# Diccionario de patrones regex
-│   ├── file_scanner.py     \# Lógica de escaneo de archivos
-│   └── reporter.py         \# Generación de reportes
-├── tests/
-│   ├── __init__.py
-│   ├── sample_files/       \# Archivos de prueba con secretos falsos
-│   ├── test_patterns.py
-│   └── test_file_scanner.py
-├── output/                 \# Reportes generados (ignorado en .gitignore)
-├── main.py                 \# CLI principal (argparse)
-├── requirements.txt
-├── requirements-dev.txt
-├── METRICS.md
-└── README.md
-
+├── .github/
+│   └── workflows/
+│       ├── ci.yml            # Integración continua (Pytest & Coverage)
+│       └── plantuml.yml      # Auto-generación y commit de diagramas .png
+├── docs/
+│   ├── media/                # Diagramas PUML (.puml) e imágenes (.png)
+│   ├── FD01-Factibilidad.md
+│   ├── FD02-Vision.md
+│   ├── FD-03-Especificacion.md
+│   ├── FD04-Arquitectura.md
+│   ├── FD05-ProyectoFinal.md
+│   └── FD06-Propuesta.md
+├── src/secret_scanner/
+│   ├── main.py               # CLI principal
+│   ├── mcp_server.py         # Servidor MCP para IA
+│   ├── scanner/
+│   │   ├── __init__.py
+│   │   ├── patterns.py       # Expresiones regulares
+│   │   ├── file_scanner.py   # Motor de análisis local
+│   │   └── reporter.py       # Explotación de reportes
+│   └── web/
+│       ├── app.py            # Servidor FastAPI (Endpoints REST)
+│       └── static/           # Archivos estáticos HTML/CSS/JS (UI)
+├── tests/                    # Pruebas unitarias
+├── output/                   # Reportes generados locales
+├── Dockerfile                # Receta Docker
+├── docker-compose.yml        # Orquestación local de contenedores
+├── render.yaml               # Blueprint de Render (Infraestructura declarativa)
+├── run_web.py                # Lanzador del entorno web local
+└── requirements.txt          # Dependencias
 ```
+
 
 ---
 
@@ -257,31 +219,12 @@ y si sus beneficios justifican la inversión en tiempo y esfuerzo.
 El proyecto es técnicamente factible. Todos los componentes tecnológicos requeridos
 son de código abierto, ampliamente documentados y con soporte activo.
 
-**Lenguaje y entorno.** Python 3.10+ es una elección natural para herramientas de
-análisis de texto: su módulo estándar `re` provee soporte completo de expresiones
-regulares, `os.walk()` permite recorrido recursivo de directorios, y `argparse`
-facilita la construcción de CLIs sin dependencias externas. La curva de aprendizaje
-es baja y los integrantes del equipo tienen experiencia previa con el lenguaje.
+**Lenguaje y entorno.** Python 3.10+ con FastAPI es una excelente elección para servicios web y análisis estático. FastAPI provee rutas de alto rendimiento basadas en Pydantic para tipado estático, mientras que el motor estándar `re` procesa las expresiones regulares con velocidad y precisión. La integración de la suite web no introduce código complejo ajeno gracias a las capacidades nativas de Python para manejar flujos web asíncronos (`asyncio`).
 
-**Detección de patrones.** Las expresiones regulares son la tecnología estándar
-para este tipo de detección. Los patrones objetivo (GitHub tokens, AWS keys, JWT,
-etc.) tienen formatos públicamente documentados y son detectables con precisión
-aceptable mediante regex. El módulo `patterns.py` centraliza todos los patrones
-en un diccionario, facilitando su extensión y prueba independiente.
+**Despliegue y Contenedores.** El uso de Docker como estándar de empaquetado resuelve problemas de portabilidad e inconsistencias entre entornos de desarrollo y producción. La plataforma Render, mediante la lectura del Blueprint `render.yaml`, automatiza completamente la compilación y puesta en marcha del servicio web expuesto, logrando un despliegue sin intervención manual en servidores Linux de la nube.
 
-**Pruebas y cobertura.** `pytest` y `pytest-cov` son las herramientas de facto
-para pruebas en Python. La arquitectura modular del proyecto (patrones, escáner,
-reportes separados) facilita alcanzar el umbral del 80% de cobertura mediante
-pruebas unitarias parametrizadas con `pytest.mark.parametrize` y pruebas de
-integración sobre archivos de muestra controlados.
+**La factibilidad técnica es EXCELENTE.**
 
-**CI/CD.** GitHub Actions provee runners gratuitos para repositorios públicos,
-suficientes para ejecutar la suite de pruebas en cada PR. No se requiere
-infraestructura adicional ni servidores propios.
-
-**Evaluación:** No se requiere inversión en infraestructura adicional. El equipo
-de cómputo disponible es suficiente para el desarrollo, las pruebas y la entrega.
-**La factibilidad técnica es ALTA.**
 
 ### 4.2. Factibilidad Económica
 
@@ -313,13 +256,12 @@ del proyecto. El trabajo es íntegramente digital.
 
 | Ítem | Costo (S/.) |
 |------|:---:|
-| GitHub (plan gratuito para repositorios públicos) | 0.00 |
-| GitHub Actions (plan gratuito: 2000 min/mes para repos públicos) | 0.00 |
-| Python 3.10+ (licencia gratuita PSF) | 0.00 |
-| pytest / pytest-cov / colorama (librerías open-source) | 0.00 |
-| VS Code / PyCharm Community Edition (gratuitos) | 0.00 |
-| Gemini / Claude (planes gratuitos para apoyo académico) | 0.00 |
+| GitHub / GitHub Actions (plan gratuito para repos públicos) | 0.00 |
+| Render Cloud Hosting (plan gratuito para servicio web e imágenes Docker) | 0.00 |
+| Python 3.10+, FastAPI, pytest, python-multipart (licencias permisivas open-source) | 0.00 |
+| VS Code / Docker Desktop (plan gratuito o comunitario) | 0.00 |
 | **Total Costos del Ambiente** | **0.00** |
+
 
 #### 4.2.4. Costos de Personal
 

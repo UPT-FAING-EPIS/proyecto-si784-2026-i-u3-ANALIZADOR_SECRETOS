@@ -1,0 +1,37 @@
+@startuml componentes
+left to right direction
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam component {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+component "Interfaz de Consola (CLI)" as CLI
+component "Interfaz Web (HTML/JS)" as WebUI
+component "Cliente MCP (Agentes de IA)" as MCPClient
+component "Extensión de VS Code" as VSCodeExt
+
+component "Controlador del Servidor Web (FastAPI)" as WebApp
+component "Servidor MCP (Stdio)" as MCPServer
+component "Motor del Scanner (file_scanner.py)" as ScannerCore
+component "Base de Patrones (patterns.py)" as Patterns
+component "Exportador (reporter.py)" as Reporter
+
+CLI --> ScannerCore
+CLI --> Reporter
+
+WebUI --> WebApp : HTTP REST API
+WebApp --> ScannerCore
+WebApp --> Reporter
+
+MCPClient --> MCPServer : JSON-RPC Stdio
+MCPServer --> ScannerCore
+
+VSCodeExt --> CLI : subprocess execution
+ScannerCore --> Patterns
+@enduml

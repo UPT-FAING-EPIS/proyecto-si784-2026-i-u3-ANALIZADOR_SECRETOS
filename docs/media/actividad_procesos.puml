@@ -1,0 +1,59 @@
+@startuml actividad_procesos
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam activity {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+skinparam start {
+    Color #6366f1
+}
+skinparam stop {
+    Color #6366f1
+}
+
+start
+:Iniciar Proceso;
+:Parsear Argumentos / Request;
+if (¿Ruta Existe?) then (No)
+    :Retornar Error de Ruta;
+    stop
+else (Sí)
+    :Listar Archivos;
+    :Filtrar Directorios Ignorados;
+    :Recorrer Archivos;
+    while (¿Quedan Archivos?) is (Sí)
+        if (¿Es Archivo de Texto?) then (Sí)
+            :Leer Líneas del Archivo;
+            while (¿Quedan Líneas?) is (Sí)
+                if (¿Coincide con Algún Patrón?) then (Sí)
+                    :Enmascarar Coincidencia;
+                    :Registrar Hallazgo (Finding);
+                else (No)
+                endif
+            endwhile (No)
+        else (No)
+            :Excluir Archivo Binario;
+        endif
+    endwhile (No)
+    
+    if (¿Se solicitó exportar?) then (Sí)
+        :Serializar a JSON / CSV;
+        :Escribir en Disco (output/);
+    else (No)
+    endif
+    
+    :Mostrar Resumen en Presentación (Consola / Web);
+    
+    if (¿Hay Hallazgos?) then (Sí)
+        :Retornar Exit Code 1 / Status Alert;
+    else (No)
+        :Retornar Exit Code 0 / Status Clean;
+    endif
+    stop
+endif
+@enduml
