@@ -1,0 +1,59 @@
+@startuml modelo_logico
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam class {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+    HeaderBackgroundColor #1f2937
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+class Pattern {
+    - name: str
+    - pattern: re.Pattern
+    - severity: str
+    + search(text): bool
+}
+
+class FileScanner {
+    - path: str
+    - verbose: bool
+    + scan_path(): List
+    - _walk_directory()
+    - _is_text_file()
+    - _scan_file()
+    - _mask_secret()
+}
+
+class Finding {
+    - type: str
+    - severity: str
+    - file: str
+    - line: int
+    - content: str
+    + to_dict(): dict
+    + to_json(): str
+}
+
+class Reporter {
+    + export_json()
+    + export_csv()
+    - _ensure_output_dir()
+}
+
+class CLI {
+    + main()
+    - _build_parser()
+    - _print_findings()
+    - _print_summary()
+    - _colored()
+}
+
+FileScanner ..> Pattern : "utiliza"
+FileScanner ..> Finding : "produce"
+CLI ..> FileScanner : "utiliza"
+CLI ..> Reporter : "utiliza"
+@enduml

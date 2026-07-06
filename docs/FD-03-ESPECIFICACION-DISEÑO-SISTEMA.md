@@ -40,27 +40,8 @@ Crear herramientas de análisis estático de código que permitan a los desarrol
 
 ### 4. Organigrama
 
-```
-┌─────────────────────────────────────────────────┐
-│   UNIVERSIDAD PRIVADA DEL TACNA (UPT)           │
-└────────────────────┬────────────────────────────┘
-                     │
-        ┌────────────┴────────────┐
-        │                         │
-    ┌───▼────────┐        ┌──────▼──────┐
-    │   FAING    │        │ Otras Fac.  │
-    └────┬───────┘        └─────────────┘
-         │
-    ┌────▼───────┐
-    │   EPIS     │
-    └────┬───────┘
-         │
-    ┌────▼──────────────────┐
-    │  Proyecto SI-784      │
-    │  Análisis y Diseño    │
-    │  SecretScanner Tool   │
-    └──────────────────────┘
-```
+![Organigrama de la Institución](./media/organigrama.png)
+
 
 ---
 
@@ -908,81 +889,8 @@ User                CLI              Scanner            Reporter          File S
 
 #### d) Diagrama de Clases
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                  LogicalModel Classes                    │
-└─────────────────────────────────────────────────────────┘
+![Diagrama de Clases Lógico](./media/modelo_logico.png)
 
-┌─────────────────────────────┐
-│        Pattern              │
-├─────────────────────────────┤
-│ Attributes:                 │
-│ - name: str                 │
-│ - pattern: re.Pattern       │
-│ - severity: str             │
-├─────────────────────────────┤
-│ Methods:                    │
-│ - search(text): bool        │
-└─────────────────────────────┘
-         △
-         │ used by
-         │
-┌─────────────────────────────┐
-│     FileScanner             │
-├─────────────────────────────┤
-│ Attributes:                 │
-│ - path: str                 │
-│ - verbose: bool             │
-├─────────────────────────────┤
-│ Methods:                    │
-│ - scan_path(): List         │
-│ - _walk_directory()         │
-│ - _is_text_file()           │
-│ - _scan_file()              │
-│ - _mask_secret()            │
-└─────────────────────────────┘
-         │
-         │ produces
-         ▼
-┌─────────────────────────────┐
-│      Finding                │
-├─────────────────────────────┤
-│ Attributes:                 │
-│ - type: str                 │
-│ - severity: str             │
-│ - file: str                 │
-│ - line: int                 │
-│ - content: str              │
-├─────────────────────────────┤
-│ Methods:                    │
-│ to_dict(): dict             │
-│ to_json(): str              │
-└─────────────────────────────┘
-         │
-         │ exported by
-         ▼
-┌─────────────────────────────┐
-│     Reporter                │
-├─────────────────────────────┤
-│ Methods:                    │
-│ - export_json()             │
-│ - export_csv()              │
-│ - _ensure_output_dir()      │
-└─────────────────────────────┘
-         
-         used by
-         
-┌─────────────────────────────┐
-│        CLI                  │
-├─────────────────────────────┤
-│ Methods:                    │
-│ - main()                    │
-│ - _build_parser()           │
-│ - _print_findings()         │
-│ - _print_summary()          │
-│ - _colored()                │
-└─────────────────────────────┘
-```
 
 ---
 

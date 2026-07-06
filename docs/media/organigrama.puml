@@ -1,0 +1,21 @@
+@startuml organigrama
+skinparam backgroundcolor transparent
+skinparam handwritten false
+skinparam rectangle {
+    BorderColor #6366f1
+    BackgroundColor #111827
+    FontColor #f3f4f6
+}
+skinparam arrow {
+    Color #6366f1
+}
+
+rectangle "UNIVERSIDAD PRIVADA DE TACNA (UPT)" as upt
+rectangle "Facultad de Ingeniería (FAING)" as faing
+rectangle "Escuela Profesional de Ingeniería de Sistemas (EPIS)" as epis
+rectangle "Proyecto SI-784\n(SecretScanner Tool)" as proyecto
+
+upt --> faing
+faing --> epis
+epis --> proyecto
+@enduml
