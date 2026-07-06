@@ -1,10 +1,10 @@
 @startgantt
 title Plan de Ruta Técnica - SecretScanner
-dateFormat YYYY-MM-DD
+Project starts 2026-03-01
 
-[Fase 1: Motor CLI & Servidor MCP Core] lasts 30 days and starts 2026-03-01
-[Fase 2: Consola Web FastAPI & Despliegue Render (Completado)] lasts 15 days and starts 2026-06-20
-[Fase 3: Integración de GitPython (Historial Git)] lasts 15 days and starts 2026-08-01
-[Fase 4: Detección Semántica por Machine Learning] lasts 20 days and starts 2026-08-16
-
+[Fase 1: Motor CLI & Servidor MCP Core] starts 2026-03-01 and lasts 30 days
+[Fase 2: Consola Web FastAPI & Despliegue Render (Completado)] starts 2026-06-20 and lasts 15 days
+[Fase 3: Integración de GitPython (Historial Git)] starts 2026-08-01 and lasts 15 days
+[Fase 4: Detección Semántica por Machine Learning] starts 2026-08-16 and lasts 20 days
 @endgantt
+
