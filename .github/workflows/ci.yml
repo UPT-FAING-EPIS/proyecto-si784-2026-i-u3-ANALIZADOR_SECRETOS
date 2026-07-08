@@ -15,6 +15,8 @@ jobs:
       # ── 1. Checkout ──────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Deshabilitar clonado superficial para mejor análisis de SonarCloud
 
       # ── 2. Set up Python 3.10 ────────────────────────────────────────────
       - name: Set up Python 3.10
@@ -40,9 +42,10 @@ jobs:
       # ── 5. Run tests with coverage ───────────────────────────────────────
       # pytest reads all options from pyproject.toml:
       #   --cov=scanner --cov-report=term-missing --cov-fail-under=80
+      # Agregamos --cov-report=xml para que Sonar pueda leer la cobertura.
       - name: Run pytest with coverage
         id: pytest
-        run: pytest
+        run: pytest --cov-report=xml
 
       # ── 6. Coverage gate failure message ────────────────────────────────
       - name: Coverage gate
@@ -51,3 +54,14 @@ jobs:
           echo "::error::Coverage below 80% — build failed"
           echo "Ensure the src/secret_scanner/ package maintains at least 80% test coverage."
           exit 1
+
+      # ── 7. SonarCloud Analysis ──────────────────────────────────────────
+      # Solo se ejecuta si el secreto SONAR_TOKEN está configurado en GitHub.
+      # continue-on-error: true asegura que el pipeline general no falle si Sonar falla o no está configurado.
+      - name: SonarCloud Scan
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        uses: SonarSource/sonarcloud-github-action@master
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
