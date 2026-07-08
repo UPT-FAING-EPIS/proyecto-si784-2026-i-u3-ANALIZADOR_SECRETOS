@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "CLITerminal" as Boundary
+control "CoreScanner" as Control
+entity "ScannerResult" as Entity1
+
+Actor --> Boundary : 1. Ejecuta CLI
+Boundary --> Control : 2. Inicia análisis
+Control --> Entity1 : 3. Guarda hallazgos
+@enduml

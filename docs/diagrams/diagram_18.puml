@@ -1,0 +1,31 @@
+@startuml
+class FileScanner {
+  +scan_directory(path: str)
+  +scan_file(filepath: str)
+  -is_binary(filepath: str)
+}
+
+class SecretPattern {
+  +name: str
+  +regex: Pattern
+  +severity: str
+  +match(text: str)
+}
+
+class ScanResult {
+  +filepath: str
+  +line_number: int
+  +secret_type: str
+  +masked_value: str
+  +mask_secret()
+}
+
+class FastMCPServer {
+  +run()
+  +register_tools()
+}
+
+FileScanner "1" *-- "*" SecretPattern : usa
+FileScanner "1" --> "*" ScanResult : genera
+FastMCPServer --> FileScanner : invoca
+@enduml

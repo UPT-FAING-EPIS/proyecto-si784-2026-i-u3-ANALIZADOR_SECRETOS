@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Agente IA" as Actor
+boundary "ClaudeConfig" as Boundary
+control "FastMCPServer" as Control
+entity "ToolRegistry" as Entity1
+
+Actor --> Boundary : 1. Lee config
+Boundary --> Control : 2. Lanza servidor
+Control --> Entity1 : 3. Registra tools
+@enduml

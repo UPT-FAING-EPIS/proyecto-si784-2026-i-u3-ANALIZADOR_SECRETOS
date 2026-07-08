@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "CodeSandbox" as Boundary
+control "SandboxController" as Control
+entity "MemoryBuffer" as Entity1
+
+Actor --> Boundary : 1. Pega texto
+Boundary --> Control : 2. Procesa texto
+Control --> Entity1 : 3. Almacena en memoria
+@enduml

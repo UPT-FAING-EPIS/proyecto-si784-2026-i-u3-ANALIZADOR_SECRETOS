@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "EntropyForm" as Boundary
+control "MathController" as Control
+entity "EntropyMetrics" as Entity1
+
+Actor --> Boundary : 1. Ingresa token
+Boundary --> Control : 2. Calcula métrica
+Control --> Entity1 : 3. Almacena score
+@enduml

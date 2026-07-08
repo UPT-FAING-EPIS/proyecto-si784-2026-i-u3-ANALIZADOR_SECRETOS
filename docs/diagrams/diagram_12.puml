@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "VSCodeMarketplace" as Boundary
+control "ExtensionActivator" as Control
+entity "ExtensionState" as Entity1
+
+Actor --> Boundary : 1. Instala .vsix
+Boundary --> Control : 2. Verifica CLI
+Control --> Entity1 : 3. Activa estado
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "DiagnosticPanel" as Boundary
+control "DiagnosticMapper" as Control
+entity "VSCodeDiagnostic" as Entity1
+
+Actor --> Boundary : 1. Revisa errores
+Boundary --> Control : 2. Pinta subrayado
+Control --> Entity1 : 3. Registra rango
+@enduml

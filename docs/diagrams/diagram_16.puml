@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Agente IA" as Actor
+boundary "LLMPrompt" as Boundary
+control "FastMCPHandler" as Control
+entity "ScannerResult" as Entity1
+
+Actor --> Boundary : 1. Invoca tool
+Boundary --> Control : 2. Ejecuta escaneo
+Control --> Entity1 : 3. Retorna JSON al LLM
+@enduml

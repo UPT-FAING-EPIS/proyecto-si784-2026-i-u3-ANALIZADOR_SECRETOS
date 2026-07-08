@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "DevSecOps" as Actor
+boundary "GitHubScanForm" as Boundary
+control "RepoClonerController" as Control
+entity "TempDirectory" as Entity1
+
+Actor --> Boundary : 1. Ingresa URL
+Boundary --> Control : 2. Llama git clone
+Control --> Entity1 : 3. Extrae código
+@enduml

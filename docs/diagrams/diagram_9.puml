@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "RegexLabForm" as Boundary
+control "PatternTester" as Control
+entity "MatchResult" as Entity1
+
+Actor --> Boundary : 1. Ingresa regla
+Boundary --> Control : 2. Ejecuta validación
+Control --> Entity1 : 3. Guarda grupos
+@enduml

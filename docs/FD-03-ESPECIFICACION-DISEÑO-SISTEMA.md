@@ -195,7 +195,7 @@ flowchart TD
 | ID     | Requerimiento funcional inicial             | Criterio general de aceptación                                                               |
 |--------|---------------------------------------------|----------------------------------------------------------------------------------------------|
 | RFI-01 | Detección mediante Regex                    | El sistema escanea archivos de texto plano buscando coincidencias con 8 expresiones regulares. |
-| RFI-02 | Enmascaramiento de Secretos                 | Los resultados exportados muestran el valor censurado (ej. `AKIA***`).                         |
+| RFI-02 | Enmascaramiento de Secretos                 | Los resultados exportados muestran el valor censurado (ej. `AKIA_***`).                         |
 | RFI-03 | Exportación JSON y CSV                      | Permite guardar los hallazgos en formatos estándar legibles por máquina.                     |
 | RFI-04 | Interfaz de Línea de Comandos (CLI)         | Soporta ejecución desde terminal mediante argumentos (`--path`, `--output`).                   |
 
@@ -263,63 +263,7 @@ flowchart TD
 
 A continuación, se presenta el diagrama de casos de uso general que muestra los 15 casos independientes interactuando con los distintos actores del sistema.
 
-```plantuml
-@startuml
-left to right direction
-skinparam packageStyle rectangle
-
-actor "Desarrollador" as Dev
-actor "DevSecOps" as Sec
-actor "Agente IA" as AI
-
-package "Módulo CLI" {
-  usecase "CU-01: Escanear directorio local" as UC1
-  usecase "CU-02: Exportar reporte JSON" as UC2
-  usecase "CU-03: Exportar reporte CSV" as UC3
-}
-
-package "Módulo Web App (FastAPI)" {
-  usecase "CU-04: Escanear repo GitHub" as UC4
-  usecase "CU-05: Subir y escanear ZIP" as UC5
-  usecase "CU-06: Escanear fragmento pegado" as UC6
-  usecase "CU-07: Evaluar entropía de token" as UC7
-  usecase "CU-08: Probar Regex personalizado" as UC8
-  usecase "CU-09: Generar clave segura" as UC9
-  usecase "CU-10: Guía de remediación" as UC10
-}
-
-package "Módulo VSCode" {
-  usecase "CU-11: Instalar extensión" as UC11
-  usecase "CU-12: Escanear archivo activo" as UC12
-  usecase "CU-13: Visualizar vulnerabilidad" as UC13
-}
-
-package "Módulo MCP" {
-  usecase "CU-14: Iniciar servidor MCP" as UC14
-  usecase "CU-15: Ejecutar scan_directory" as UC15
-}
-
-Dev --> UC1
-Dev --> UC6
-Dev --> UC7
-Dev --> UC8
-Dev --> UC9
-Dev --> UC11
-Dev --> UC12
-Dev --> UC13
-
-Sec --> UC1
-Sec --> UC2
-Sec --> UC3
-Sec --> UC4
-Sec --> UC5
-Sec --> UC10
-
-AI --> UC14
-AI --> UC15
-UC15 ..> UC1 : <<include core logic>>
-@enduml
-```
+![Diagrama](./diagrams/diagram_1.png)
 
 ### 6.2.3 Escenarios de casos de uso (narrativas)
 
@@ -420,19 +364,7 @@ En esta sección se presenta el desglose de Boundary-Control-Entity y el Diagram
 | Control  | CoreScanner          | Ejecuta lógica de iteración y llamadas regex          |
 | Entity   | ScannerResult        | Contiene los secretos detectados                      |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "CLITerminal" as Boundary
-control "CoreScanner" as Control
-entity "ScannerResult" as Entity1
-
-Actor --> Boundary : 1. Ejecuta CLI
-Boundary --> Control : 2. Inicia análisis
-Control --> Entity1 : 3. Guarda hallazgos
-@enduml
-```
+![Diagrama](./diagrams/diagram_2.png)
 
 #### CU-02: Exportar reporte JSON
 
@@ -442,19 +374,7 @@ Control --> Entity1 : 3. Guarda hallazgos
 | Control  | JSONReporter         | Formatea y censura datos para exportación             |
 | Entity   | FileSystem           | Escribe el archivo en disco                           |
 
-```plantuml
-@startuml
-left to right direction
-actor "DevSecOps" as Actor
-boundary "CLIParams" as Boundary
-control "JSONReporter" as Control
-entity "FileSystem" as Entity1
-
-Actor --> Boundary : 1. Define flag JSON
-Boundary --> Control : 2. Llama reporter
-Control --> Entity1 : 3. Guarda report.json
-@enduml
-```
+![Diagrama](./diagrams/diagram_3.png)
 
 #### CU-03: Exportar reporte CSV
 
@@ -464,19 +384,7 @@ Control --> Entity1 : 3. Guarda report.json
 | Control  | CSVReporter          | Mapea resultados a formato tabular                    |
 | Entity   | FileSystem           | Escribe el archivo CSV                                |
 
-```plantuml
-@startuml
-left to right direction
-actor "DevSecOps" as Actor
-boundary "CLIParams" as Boundary
-control "CSVReporter" as Control
-entity "FileSystem" as Entity1
-
-Actor --> Boundary : 1. Define flag CSV
-Boundary --> Control : 2. Construye filas
-Control --> Entity1 : 3. Guarda report.csv
-@enduml
-```
+![Diagrama](./diagrams/diagram_4.png)
 
 #### CU-04: Escanear repo GitHub
 
@@ -486,19 +394,7 @@ Control --> Entity1 : 3. Guarda report.csv
 | Control  | RepoClonerController | Descarga el repositorio en RAM temporal               |
 | Entity   | TempDirectory        | Espacio donde se almacena el clon                     |
 
-```plantuml
-@startuml
-left to right direction
-actor "DevSecOps" as Actor
-boundary "GitHubScanForm" as Boundary
-control "RepoClonerController" as Control
-entity "TempDirectory" as Entity1
-
-Actor --> Boundary : 1. Ingresa URL
-Boundary --> Control : 2. Llama git clone
-Control --> Entity1 : 3. Extrae código
-@enduml
-```
+![Diagrama](./diagrams/diagram_5.png)
 
 #### CU-05: Subir y escanear ZIP
 
@@ -508,19 +404,7 @@ Control --> Entity1 : 3. Extrae código
 | Control  | ExtractorController  | Descomprime el archivo y llama al CoreScanner         |
 | Entity   | ScannerResult        | Almacena resultados del contenido del ZIP             |
 
-```plantuml
-@startuml
-left to right direction
-actor "QA" as Actor
-boundary "ZIPUploader" as Boundary
-control "ExtractorController" as Control
-entity "ScannerResult" as Entity1
-
-Actor --> Boundary : 1. Sube .zip
-Boundary --> Control : 2. Descomprime
-Control --> Entity1 : 3. Genera resultados
-@enduml
-```
+![Diagrama](./diagrams/diagram_6.png)
 
 #### CU-06: Escanear fragmento pegado
 
@@ -530,19 +414,7 @@ Control --> Entity1 : 3. Genera resultados
 | Control  | SandboxController    | Ejecuta motor regex en el buffer string               |
 | Entity   | MemoryBuffer         | Almacena el texto temporalmente                       |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "CodeSandbox" as Boundary
-control "SandboxController" as Control
-entity "MemoryBuffer" as Entity1
-
-Actor --> Boundary : 1. Pega texto
-Boundary --> Control : 2. Procesa texto
-Control --> Entity1 : 3. Almacena en memoria
-@enduml
-```
+![Diagrama](./diagrams/diagram_7.png)
 
 #### CU-07: Evaluar entropía de token
 
@@ -552,19 +424,7 @@ Control --> Entity1 : 3. Almacena en memoria
 | Control  | MathController       | Calcula algoritmo de Shannon                          |
 | Entity   | EntropyMetrics       | Objeto con bits y tiempo de crack                     |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "EntropyForm" as Boundary
-control "MathController" as Control
-entity "EntropyMetrics" as Entity1
-
-Actor --> Boundary : 1. Ingresa token
-Boundary --> Control : 2. Calcula métrica
-Control --> Entity1 : 3. Almacena score
-@enduml
-```
+![Diagrama](./diagrams/diagram_8.png)
 
 #### CU-08: Probar Regex personalizado
 
@@ -574,19 +434,7 @@ Control --> Entity1 : 3. Almacena score
 | Control  | PatternTester        | Ejecuta el test de coincidencia                       |
 | Entity   | MatchResult          | Arreglo de coincidencias                              |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "RegexLabForm" as Boundary
-control "PatternTester" as Control
-entity "MatchResult" as Entity1
-
-Actor --> Boundary : 1. Ingresa regla
-Boundary --> Control : 2. Ejecuta validación
-Control --> Entity1 : 3. Guarda grupos
-@enduml
-```
+![Diagrama](./diagrams/diagram_9.png)
 
 #### CU-09: Generar clave segura
 
@@ -596,19 +444,7 @@ Control --> Entity1 : 3. Guarda grupos
 | Control  | CryptoGenerator      | Crea secuencias aleatorias seguras                    |
 | Entity   | SecureKey            | La cadena generada                                    |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "GeneratorForm" as Boundary
-control "CryptoGenerator" as Control
-entity "SecureKey" as Entity1
-
-Actor --> Boundary : 1. Ajusta parámetros
-Boundary --> Control : 2. Genera random
-Control --> Entity1 : 3. Retorna clave
-@enduml
-```
+![Diagrama](./diagrams/diagram_10.png)
 
 #### CU-10: Guía de remediación
 
@@ -618,19 +454,7 @@ Control --> Entity1 : 3. Retorna clave
 | Control  | ContentManager       | Selecciona guía acorde al lenguaje de programación    |
 | Entity   | DocSnippet           | Fragmentos de Markdown o HTML                         |
 
-```plantuml
-@startuml
-left to right direction
-actor "DevSecOps" as Actor
-boundary "RemediationModal" as Boundary
-control "ContentManager" as Control
-entity "DocSnippet" as Entity1
-
-Actor --> Boundary : 1. Solicita ayuda
-Boundary --> Control : 2. Carga docs
-Control --> Entity1 : 3. Extrae snippet
-@enduml
-```
+![Diagrama](./diagrams/diagram_11.png)
 
 #### CU-11: Instalar extensión
 
@@ -640,19 +464,7 @@ Control --> Entity1 : 3. Extrae snippet
 | Control  | ExtensionActivator   | Registra comandos y verifica dependencias locales     |
 | Entity   | ExtensionState       | Estado local habilitado/deshabilitado                 |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "VSCodeMarketplace" as Boundary
-control "ExtensionActivator" as Control
-entity "ExtensionState" as Entity1
-
-Actor --> Boundary : 1. Instala .vsix
-Boundary --> Control : 2. Verifica CLI
-Control --> Entity1 : 3. Activa estado
-@enduml
-```
+![Diagrama](./diagrams/diagram_12.png)
 
 #### CU-12: Escanear archivo activo
 
@@ -662,19 +474,7 @@ Control --> Entity1 : 3. Activa estado
 | Control  | SaveEventHandler     | Lanza un proceso hijo CLI (`subprocess`)              |
 | Entity   | JSONBuffer           | Recepción del reporte en STDOUT                       |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "VSCodeEditor" as Boundary
-control "SaveEventHandler" as Control
-entity "JSONBuffer" as Entity1
-
-Actor --> Boundary : 1. Guarda archivo
-Boundary --> Control : 2. Invoca scanner
-Control --> Entity1 : 3. Recibe JSON
-@enduml
-```
+![Diagrama](./diagrams/diagram_13.png)
 
 #### CU-13: Visualizar vulnerabilidad
 
@@ -684,19 +484,7 @@ Control --> Entity1 : 3. Recibe JSON
 | Control  | DiagnosticMapper     | Convierte JSONBuffer a rangos de texto (Squiggly)     |
 | Entity   | VSCodeDiagnostic     | Objeto nativo de advertencia del IDE                  |
 
-```plantuml
-@startuml
-left to right direction
-actor "Desarrollador" as Actor
-boundary "DiagnosticPanel" as Boundary
-control "DiagnosticMapper" as Control
-entity "VSCodeDiagnostic" as Entity1
-
-Actor --> Boundary : 1. Revisa errores
-Boundary --> Control : 2. Pinta subrayado
-Control --> Entity1 : 3. Registra rango
-@enduml
-```
+![Diagrama](./diagrams/diagram_14.png)
 
 #### CU-14: Iniciar servidor MCP
 
@@ -706,19 +494,7 @@ Control --> Entity1 : 3. Registra rango
 | Control  | FastMCPServer        | Escucha en canal Standard Input/Output                |
 | Entity   | ToolRegistry         | Catálogo de herramientas expuestas (scan_directory)   |
 
-```plantuml
-@startuml
-left to right direction
-actor "Agente IA" as Actor
-boundary "ClaudeConfig" as Boundary
-control "FastMCPServer" as Control
-entity "ToolRegistry" as Entity1
-
-Actor --> Boundary : 1. Lee config
-Boundary --> Control : 2. Lanza servidor
-Control --> Entity1 : 3. Registra tools
-@enduml
-```
+![Diagrama](./diagrams/diagram_15.png)
 
 #### CU-15: Ejecutar scan_directory
 
@@ -728,49 +504,13 @@ Control --> Entity1 : 3. Registra tools
 | Control  | FastMCPHandler       | Ejecuta el scanner core mediante la herramienta       |
 | Entity   | ScannerResult        | Lista de vulnerabilidades halladas                    |
 
-```plantuml
-@startuml
-left to right direction
-actor "Agente IA" as Actor
-boundary "LLMPrompt" as Boundary
-control "FastMCPHandler" as Control
-entity "ScannerResult" as Entity1
-
-Actor --> Boundary : 1. Invoca tool
-Boundary --> Control : 2. Ejecuta escaneo
-Control --> Entity1 : 3. Retorna JSON al LLM
-@enduml
-```
+![Diagrama](./diagrams/diagram_16.png)
 
 ### 6.3.2 Diagrama de Actividades con objetos
 
 Ejemplo del flujo de actividad integral para el caso de uso principal (Escaneo en Terminal):
 
-```plantuml
-@startuml
-|Desarrollador|
-start
-:Escribe comando CLI;
-|CLI Terminal (Boundary)|
-:Recibe argumentos (--path);
-|CoreScanner (Control)|
-:Itera directorios;
-:Verifica extensiones validas;
-if (Es binario?) then (Si)
-  :Omite archivo;
-else (No)
-  :Lee archivo linea a linea;
-  :Aplica Regex Rules;
-  |ScannerResult (Entity)|
-  :Guarda match encontrado;
-endif
-|CoreScanner (Control)|
-:Finaliza iteracion;
-|CLI Terminal (Boundary)|
-:Muestra salida formateada en consola;
-stop
-@enduml
-```
+![Diagrama](./diagrams/diagram_17.png)
 
 ### 6.3.3 Diagrama de secuencia
 
@@ -1123,39 +863,7 @@ sequenceDiagram
 
 ### 6.3.4 Diagrama de clases
 
-```plantuml
-@startuml
-class FileScanner {
-  +scan_directory(path: str)
-  +scan_file(filepath: str)
-  -is_binary(filepath: str)
-}
-
-class SecretPattern {
-  +name: str
-  +regex: Pattern
-  +severity: str
-  +match(text: str)
-}
-
-class ScanResult {
-  +filepath: str
-  +line_number: int
-  +secret_type: str
-  +masked_value: str
-  +mask_secret()
-}
-
-class FastMCPServer {
-  +run()
-  +register_tools()
-}
-
-FileScanner "1" *-- "*" SecretPattern : usa
-FileScanner "1" --> "*" ScanResult : genera
-FastMCPServer --> FileScanner : invoca
-@enduml
-```
+![Diagrama](./diagrams/diagram_18.png)
 
 # 7. Conclusiones
 
@@ -1184,7 +892,7 @@ FastMCPServer --> FileScanner : invoca
 * **Historia de Usuario:** COMO Analista de Seguridad QUIERO que el analizador detecte tokens comunes (AWS, JWT, Slack, RSA) PARA evitar subir credenciales a producción.
 * **Criterios de Aceptación:** Todas las 8 Regex definidas deben detectar correctamente coincidencias positivas sin generar altos falsos positivos.
 * **Escenario de Prueba BDD:**
-  * **DADO** que hay un archivo que contiene `AKIAIOSFODNN7EXAMPLE`
+  * **DADO** que hay un archivo que contiene `AKIA_FAKE_KEY_FOR_DOCS`
   * **CUANDO** el analizador procesa este archivo
   * **ENTONCES** debe identificar y marcar la cadena como vulnerabilidad de `AWS Access Key`.
 
@@ -1192,7 +900,7 @@ FastMCPServer --> FileScanner : invoca
 * **Historia de Usuario:** COMO Administrador DevOps QUIERO exportar los hallazgos en CSV o JSON PARA integrarlos con otras herramientas.
 * **Criterios de Aceptación:** El reporte exportado debe tener todas las credenciales censuradas a la mitad.
 * **Escenario de Prueba BDD:**
-  * **DADO** que el scanner halla un token de Slack: `xoxb-123456789-abcdefg`
+  * **DADO** que el scanner halla un token de Slack: `xoxb-FAKE-TOKEN-FOR-DOCS`
   * **CUANDO** se genera el archivo `report.json`
   * **ENTONCES** el campo de valor del secreto debe registrarse como `xoxb-1234***`.
 

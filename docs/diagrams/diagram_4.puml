@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "DevSecOps" as Actor
+boundary "CLIParams" as Boundary
+control "CSVReporter" as Control
+entity "FileSystem" as Entity1
+
+Actor --> Boundary : 1. Define flag CSV
+Boundary --> Control : 2. Construye filas
+Control --> Entity1 : 3. Guarda report.csv
+@enduml

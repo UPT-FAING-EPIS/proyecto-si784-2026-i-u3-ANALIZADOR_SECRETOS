@@ -1,0 +1,23 @@
+@startuml
+|Desarrollador|
+start
+:Escribe comando CLI;
+|CLI Terminal (Boundary)|
+:Recibe argumentos (--path);
+|CoreScanner (Control)|
+:Itera directorios;
+:Verifica extensiones validas;
+if (Es binario?) then (Si)
+  :Omite archivo;
+else (No)
+  :Lee archivo linea a linea;
+  :Aplica Regex Rules;
+  |ScannerResult (Entity)|
+  :Guarda match encontrado;
+endif
+|CoreScanner (Control)|
+:Finaliza iteracion;
+|CLI Terminal (Boundary)|
+:Muestra salida formateada en consola;
+stop
+@enduml

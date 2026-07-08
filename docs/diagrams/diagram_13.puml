@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "VSCodeEditor" as Boundary
+control "SaveEventHandler" as Control
+entity "JSONBuffer" as Entity1
+
+Actor --> Boundary : 1. Guarda archivo
+Boundary --> Control : 2. Invoca scanner
+Control --> Entity1 : 3. Recibe JSON
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "QA" as Actor
+boundary "ZIPUploader" as Boundary
+control "ExtractorController" as Control
+entity "ScannerResult" as Entity1
+
+Actor --> Boundary : 1. Sube .zip
+Boundary --> Control : 2. Descomprime
+Control --> Entity1 : 3. Genera resultados
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "DevSecOps" as Actor
+boundary "RemediationModal" as Boundary
+control "ContentManager" as Control
+entity "DocSnippet" as Entity1
+
+Actor --> Boundary : 1. Solicita ayuda
+Boundary --> Control : 2. Carga docs
+Control --> Entity1 : 3. Extrae snippet
+@enduml

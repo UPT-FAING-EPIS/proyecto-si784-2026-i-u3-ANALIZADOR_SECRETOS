@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "DevSecOps" as Actor
+boundary "CLIParams" as Boundary
+control "JSONReporter" as Control
+entity "FileSystem" as Entity1
+
+Actor --> Boundary : 1. Define flag JSON
+Boundary --> Control : 2. Llama reporter
+Control --> Entity1 : 3. Guarda report.json
+@enduml

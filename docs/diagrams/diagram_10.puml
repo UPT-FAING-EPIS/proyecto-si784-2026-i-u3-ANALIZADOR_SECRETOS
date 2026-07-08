@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+actor "Desarrollador" as Actor
+boundary "GeneratorForm" as Boundary
+control "CryptoGenerator" as Control
+entity "SecureKey" as Entity1
+
+Actor --> Boundary : 1. Ajusta parámetros
+Boundary --> Control : 2. Genera random
+Control --> Entity1 : 3. Retorna clave
+@enduml
